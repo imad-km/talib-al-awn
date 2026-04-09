@@ -1,0 +1,151 @@
+/* ═══ REGISTER PAGE — from register.html ═══ */
+.register-root{font-family:'Cairo',sans-serif;background:var(--bg,#f7f7f7);min-height:100vh;position:relative}
+.register-root *,.register-root *::before,.register-root *::after{box-sizing:border-box;margin:0;padding:0}
+.register-root a{text-decoration:none;color:inherit}
+.register-root::before{content:'';position:fixed;inset:0;pointer-events:none;background-image:radial-gradient(circle,rgba(124,58,237,.10) 1.5px,transparent 1.5px);background-size:48px 48px}
+
+/* NAV */
+.register-root nav{display:flex;align-items:center;justify-content:space-between;padding:0 5%;height:64px;background:rgba(255,255,255,.92);-webkit-backdrop-filter:blur(12px);backdrop-filter:blur(12px);border-bottom:1px solid rgba(124,58,237,.20);position:sticky;top:0;z-index:100}
+.register-root .nav-logo{display:flex;align-items:center;gap:10px;font-size:20px;font-weight:800;color:#10202d}
+.register-root .nav-logo-img{height:36px;width:auto;object-fit:contain}
+.register-root .nav-logo span{color:#7C3AED}
+.register-root .nav-actions{display:flex;align-items:center;gap:12px;font-size:14px}
+.register-root .nav-actions a{color:#2a3d4d;font-weight:500}
+.register-root .nav-actions .lang-btn{background:rgba(124,58,237,.1);border:1.5px solid rgba(124,58,237,.2);border-radius:100px;padding:4px 12px;font-size:12px;font-weight:700;cursor:pointer;font-family:'Cairo',sans-serif;color:#7C3AED;transition:all .2s}
+.register-root .nav-actions .lang-btn:hover{background:#EDE9FE}
+
+/* PAGE */
+.register-root .page{max-width:660px;margin:0 auto;padding:40px 20px 80px;position:relative;z-index:1}
+
+/* STEP BAR */
+.register-root .step-bar{display:flex;align-items:flex-start;max-width:560px;margin:0 auto 36px}
+.register-root .step-col{display:flex;flex-direction:column;align-items:center}
+.register-root .sdot{width:34px;height:34px;border-radius:50%;border:2px solid rgba(124,58,237,.20);display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:700;color:#6b7c8a;background:#fff;flex-shrink:0;transition:all .3s}
+.register-root .sdot.active{background:#7C3AED;border-color:#7C3AED;color:#fff;box-shadow:0 0 0 5px rgba(124,58,237,.18)}
+.register-root .sdot.done{background:#5a9e6f;border-color:#5a9e6f;color:#fff}
+.register-root .slbl{font-size:10px;font-weight:600;color:#6b7c8a;text-align:center;margin-top:5px;white-space:nowrap}
+.register-root .slbl.active{color:#7C3AED}
+.register-root .slbl.done{color:#3d7a52}
+.register-root .sline{flex:1;height:2px;background:rgba(124,58,237,.20);transition:background .3s;margin-top:17px}
+.register-root .sline.done{background:#5a9e6f}
+
+/* ALERT */
+.register-root .alert{display:none;padding:12px 16px;border-radius:12px;font-size:13px;font-weight:600;margin-bottom:20px;background:#FEF2F2;color:#EF4444;border:1px solid #FECACA}
+.register-root .alert.show{display:block}
+.register-root .alert.success{background:#e4f2e8;color:#3d7a52;border-color:#b8ddc4}
+
+/* CARD */
+.register-root .card{background:#fff;border-radius:20px;border:1.5px solid rgba(124,58,237,.20);padding:36px 40px;margin-bottom:16px;box-shadow:0 4px 24px rgba(0,0,0,.05);animation:regFadeUp .4s ease both}
+.register-root .card-title{font-size:22px;font-weight:800;color:#10202d;text-align:center;margin-bottom:8px}
+.register-root .card-sub{font-size:14px;color:#6b7c8a;text-align:center;margin-bottom:28px;line-height:1.65}
+@keyframes regFadeUp{from{opacity:0;transform:translateY(18px)}to{opacity:1;transform:translateY(0)}}
+
+/* ROLE CARDS */
+.register-root .role-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:8px}
+.register-root .role-card{border:2px solid rgba(124,58,237,.20);border-radius:18px;padding:32px 24px 28px;cursor:pointer;background:#fff;text-align:center;transition:all .22s;position:relative;overflow:hidden;display:flex;flex-direction:column;align-items:center}
+.register-root .role-card::after{content:'';position:absolute;inset:0;background:linear-gradient(135deg,#EDE9FE,transparent);opacity:0;transition:opacity .22s;pointer-events:none}
+.register-root .role-card:hover{border-color:#7C3AED;transform:translateY(-2px);box-shadow:0 8px 28px rgba(124,58,237,.12)}
+.register-root .role-card:hover::after{opacity:1}
+.register-root .role-card.selected{border-color:#7C3AED;box-shadow:0 0 0 4px rgba(124,58,237,.15)}
+.register-root .role-card.selected::after{opacity:1}
+.register-root .role-icon{width:80px;height:80px;object-fit:contain;margin-bottom:16px;display:block;position:relative;z-index:1}
+.register-root .role-title{font-size:17px;font-weight:800;color:#10202d;margin-bottom:6px;position:relative;z-index:1}
+.register-root .role-desc{font-size:13px;color:#6b7c8a;line-height:1.55;position:relative;z-index:1}
+.register-root .role-check{position:absolute;top:12px;left:12px;width:22px;height:22px;border-radius:50%;background:#7C3AED;color:#fff;display:none;align-items:center;justify-content:center;font-size:11px;font-weight:700;z-index:2}
+.register-root .role-card.selected .role-check{display:flex}
+
+/* FORM FIELDS */
+.register-root .form-grid-2{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.register-root .fg{display:flex;flex-direction:column;gap:5px;margin-bottom:14px;position:relative}
+.register-root .fg label{font-size:12px;font-weight:700;color:#2a3d4d}
+.register-root .fg label .opt{font-weight:400;color:#6b7c8a}
+.register-root .fg input,.register-root .fg select{height:46px;padding:0 14px;border:1.5px solid rgba(124,58,237,.20);border-radius:10px;font-family:'Cairo',sans-serif;font-size:14px;color:#10202d;background:var(--bg,#f7f7f7);transition:border-color .2s,box-shadow .2s}
+.register-root .fg input:focus,.register-root .fg select:focus{outline:none;border-color:#7C3AED;box-shadow:0 0 0 3px rgba(124,58,237,.15)}
+.register-root .pwd-toggle{position:absolute;left:12px;bottom:12px;background:none;border:none;cursor:pointer;font-size:16px;color:#6b7c8a}
+[dir="ltr"] .register-root .pwd-toggle{left:auto;right:12px}
+
+.register-root .sec-divider{font-size:11px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:#6b7c8a;margin:20px 0 14px;padding-bottom:8px;border-bottom:1px solid rgba(124,58,237,.20)}
+
+/* BUTTONS */
+.register-root .btn-primary{width:100%;height:52px;border-radius:12px;border:none;cursor:pointer;background:linear-gradient(135deg,#5B21B6,#7C3AED);color:#fff;font-family:'Cairo',sans-serif;font-size:16px;font-weight:800;display:flex;align-items:center;justify-content:center;gap:8px;box-shadow:0 6px 20px rgba(124,58,237,.40);transition:transform .18s,box-shadow .18s}
+.register-root .btn-primary:hover:not(:disabled){transform:translateY(-2px);box-shadow:0 10px 28px rgba(124,58,237,.55)}
+.register-root .btn-primary:disabled{opacity:.6;cursor:not-allowed}
+.register-root .btn-secondary{background:transparent;border:1.5px solid rgba(124,58,237,.20);border-radius:10px;padding:0 22px;height:52px;font-family:'Cairo',sans-serif;font-size:14px;font-weight:600;color:#2a3d4d;cursor:pointer;transition:all .2s;display:flex;align-items:center;gap:6px}
+.register-root .btn-secondary:hover{border-color:#7C3AED;color:#7C3AED}
+.register-root .action-row{display:flex;gap:12px;margin-top:8px}
+.register-root .action-row .btn-primary{flex:1}
+.register-root .spinner{width:20px;height:20px;border:2.5px solid rgba(255,255,255,.4);border-top-color:#fff;border-radius:50%;display:none;animation:regSpin .7s linear infinite}
+.register-root .btn-primary.loading .spinner{display:block}
+.register-root .btn-primary.loading .btn-label{display:none}
+@keyframes regSpin{to{transform:rotate(360deg)}}
+
+/* OTP */
+.register-root .otp-inputs{display:flex;gap:8px;justify-content:center;margin-bottom:24px}
+.register-root .otp-inputs input{width:44px;height:52px;border:2px solid rgba(124,58,237,.20);border-radius:10px;text-align:center;font-family:'Cairo',sans-serif;font-size:22px;font-weight:800;color:#10202d;background:var(--bg,#f7f7f7);transition:all .2s}
+.register-root .otp-inputs input:focus{border-color:#7C3AED;box-shadow:0 0 0 3px rgba(124,58,237,.15);outline:none}
+.register-root .otp-inputs input.filled{border-color:#7C3AED;background:#EDE9FE;color:#5B21B6}
+.register-root .timer-badge{display:inline-flex;align-items:center;gap:6px;font-size:13px;font-weight:600;padding:6px 16px;border-radius:100px;background:#EDE9FE;color:#5B21B6;margin-bottom:20px}
+.register-root .resend-btn{background:none;border:none;font-family:'Cairo',sans-serif;font-size:14px;font-weight:700;color:#7C3AED;cursor:pointer;opacity:.5}
+.register-root .resend-btn:not(:disabled){opacity:1}
+
+.register-root .form-foot{text-align:center;font-size:14px;color:#6b7c8a;margin-top:16px}
+.register-root .form-foot a{color:#7C3AED;font-weight:700}
+
+.register-root .step-panel{animation:regFadeUp .35s ease both}
+
+/* SOCIAL */
+.register-root .social-row{display:flex;gap:12px;margin-bottom:16px}
+.register-root .btn-social{flex:1;height:46px;border:1.5px solid rgba(124,58,237,.20);border-radius:12px;background:#fff;cursor:pointer;font-family:'Cairo',sans-serif;font-size:14px;font-weight:600;color:#2a3d4d;display:flex;align-items:center;justify-content:center;gap:8px;transition:border-color .2s,background .2s}
+.register-root .btn-social:hover{border-color:#7C3AED;background:#EDE9FE}
+.register-root .divider{display:flex;align-items:center;gap:12px;margin:18px 0;color:#6b7c8a;font-size:13px}
+.register-root .divider::before,.register-root .divider::after{content:'';flex:1;height:1px;background:rgba(124,58,237,.20)}
+
+/* UPLOAD */
+.register-root .upload-grid{display:grid;grid-template-columns:1fr auto 1fr;gap:0;align-items:stretch;margin-bottom:20px}
+.register-root .upload-or{display:flex;align-items:center;justify-content:center;padding:0 14px;font-size:13px;color:#6b7c8a;font-weight:600}
+.register-root .upload-box{border:2px dashed rgba(124,58,237,.20);border-radius:16px;padding:28px 16px;text-align:center;cursor:pointer;background:var(--bg,#f7f7f7);transition:border-color .2s,background .2s;position:relative;display:flex;flex-direction:column;align-items:center;justify-content:center}
+.register-root .upload-box:hover{border-color:#7C3AED;background:#EDE9FE}
+.register-root .upload-box input[type=file]{position:absolute;inset:0;opacity:0;cursor:pointer;width:100%;height:100%}
+.register-root .upload-box-icon{width:56px;height:56px;border-radius:14px;background:#EDE9FE;border:1.5px solid rgba(124,58,237,.30);display:flex;align-items:center;justify-content:center;margin-bottom:12px}
+.register-root .upload-box-icon img{width:28px;height:28px;object-fit:contain;filter:invert(33%) sepia(90%) saturate(1400%) hue-rotate(210deg) brightness(95%)}
+.register-root .upload-box-title{font-size:14px;font-weight:700;color:#10202d;margin-bottom:5px}
+.register-root .upload-box-sub{font-size:12px;color:#6b7c8a;margin-bottom:12px}
+.register-root .btn-upload{display:inline-flex;align-items:center;gap:5px;padding:8px 16px;border-radius:100px;background:#7C3AED;color:#fff;border:none;font-family:'Cairo',sans-serif;font-size:12px;font-weight:700;box-shadow:0 3px 12px rgba(124,58,237,.32);pointer-events:none}
+.register-root .upload-box-hint{font-size:10px;color:#6b7c8a;margin-top:8px;line-height:1.5}
+
+/* SCAN STATUS & BADGES */
+.register-root .scan-status{display:none;align-items:center;gap:10px;padding:12px 16px;background:#EDE9FE;border:1px solid rgba(124,58,237,.22);border-radius:10px;margin:12px 0;font-size:14px;color:#5B21B6}
+.register-root .scan-status.show{display:flex}
+.register-root .scan-spinner{width:18px;height:18px;border:2px solid rgba(124,58,237,.30);border-top-color:#7C3AED;border-radius:50%;animation:regSpin .7s linear infinite;flex-shrink:0}
+
+.register-root .card-preview{display:none;margin-bottom:14px}
+.register-root .card-preview.show{display:block}
+.register-root .card-preview img{width:100%;border-radius:12px;object-fit:contain;max-height:380px;background:var(--bg,#f7f7f7);border:1.5px solid rgba(124,58,237,.20)}
+
+.register-root .scan-fail-banner{display:none;align-items:flex-start;gap:12px;padding:14px 16px;background:#FEF2F2;border:1.5px solid #FECACA;border-radius:12px;margin-bottom:20px}
+.register-root .scan-fail-banner.show{display:flex}
+.register-root .scan-fail-icon{width:32px;height:32px;border-radius:50%;background:#FEE2E2;display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:14px;font-weight:700;color:#991B1B}
+.register-root .scan-fail-text strong{display:block;font-size:13px;font-weight:700;color:#991B1B;margin-bottom:3px}
+.register-root .scan-fail-text p{font-size:12px;color:#B91C1C;line-height:1.55}
+
+.register-root .scan-success-banner{display:none;align-items:flex-start;gap:12px;padding:14px 16px;background:#ECFDF5;border:1.5px solid #A7F3D0;border-radius:12px;margin-bottom:20px}
+.register-root .scan-success-banner.show{display:flex}
+.register-root .scan-success-icon{width:32px;height:32px;border-radius:50%;background:#D1FAE5;display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:14px;font-weight:700;color:#065F46}
+.register-root .scan-success-text strong{display:block;font-size:13px;font-weight:700;color:#065F46;margin-bottom:3px}
+.register-root .scan-success-text p{font-size:12px;color:#047857;line-height:1.55}
+
+.register-root .fg input.prefilled{background:#EDE9FE;border-color:rgba(124,58,237,.40)}
+
+@media(max-width:640px){
+  .register-root .card{padding:24px 18px}
+  .register-root .role-grid{grid-template-columns:1fr}
+  .register-root .upload-grid{grid-template-columns:1fr;gap:12px}
+  .register-root .upload-or{display:none}
+  .register-root .form-grid-2{grid-template-columns:1fr}
+}
+
+/* UNAVAILABLE OVERLAY */
+.register-root .unavailable-input{position:relative;width:100%}
+.register-root .unavailable-input input{opacity:0.4 !important;background:#f1f1f1 !important;cursor:not-allowed !important}
+.register-root .unavailable-overlay{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;background:rgba(255,255,255,0.2);backdrop-filter:blur(2px);-webkit-backdrop-filter:blur(2px);border-radius:12px;pointer-events:none;z-index:10}
+.register-root .unavailable-overlay span{font-size:11px;font-weight:800;color:#7C3AED;background:#fff;padding:6px 14px;border-radius:100px;border:1.5px solid #7C3AED;box-shadow:0 6px 15px rgba(124,58,237,0.25);letter-spacing:0.5px}

@@ -1,0 +1,233 @@
+import React, { useState } from 'react';
+import { create_payement } from 'chargily-epay-react-js/dist/chargily-epay-react-js.esm.js';
+import { XMarkIcon } from '@heroicons/react/24/outline';
+import { useLanguage } from '../context/LanguageContext';
+
+const ChargilyWithdrawModal = ({ onClose }) => {
+  const { lang } = useLanguage();
+  const [amount, setAmount] = useState(2500);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(null);
+
+  const isRtl = lang === 'ar';
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    setLoading(true);
+    setError(null);
+
+    // Using Chargily gateway to route the student to withdrawal/CCP linking
+    const invoice = {
+      amount: Number(amount),
+      invoice_number: Math.floor(Math.random() * 1000000),
+      client: "Student Identity",
+      mode: "EDAHABIA", // We use EDAHABIA as the bridge for CCP withdrawals in this system
+      webhook_url: import.meta.env.CHARGILY_WEBHOOK_URL,
+      back_url: window.location.href,
+      discount: 0
+    };
+
+    try {
+      await create_payement(invoice);
+    } catch (err) {
+      setError(err.message || 'Failed to redirect to Chargily Gateway.');
+      setLoading(false);
+    }
+  };
+
+  return (
+    <div className="chargily-modal-overlay">
+      <div className={`chargily-modal-content ${isRtl ? 'rtl' : 'ltr'}`}>
+        <button className="close-btn" onClick={onClose}>
+          <XMarkIcon className="w-6 h-6" />
+        </button>
+
+        <div className="modal-header">
+          <h2>{isRtl ? 'سحب الأموال' : 'Withdraw Funds'}</h2>
+          <p>{isRtl ? 'أدخل المبلغ الذي ترغب في سحبه إلى حسابك البريدي عبر بوابة Chargily.' : 'Enter the amount you wish to withdraw to your CCP account via Chargily.'}</p>
+        </div>
+
+        {error && <div className="error-alert">{error}</div>}
+
+        <form onSubmit={handleSubmit}>
+          <div className="form-group">
+            <label>{isRtl ? 'المبلغ (دج)' : 'Amount (Da)'}</label>
+            <input 
+              type="number" 
+              min="500"
+              value={amount} 
+              onChange={(e) => setAmount(e.target.value)} 
+              required
+              className="amount-input"
+            />
+          </div>
+
+          <div className="form-actions">
+            <button type="button" className="cancel-btn" onClick={onClose} disabled={loading}>
+              {isRtl ? 'إلغاء' : 'Cancel'}
+            </button>
+            <button type="submit" className="submit-pay-btn" disabled={loading}>
+              {loading ? (isRtl ? 'جاري التحويل...' : 'Redirecting...') : (isRtl ? 'متابعة إلى Chargily' : 'Continue to Chargily')}
+            </button>
+          </div>
+        </form>
+      </div>
+
+      <style dangerouslySetInnerHTML={{ __html: `
+        .chargily-modal-overlay {
+          position: fixed;
+          top: 0; left: 0; right: 0; bottom: 0;
+          background: rgba(15, 23, 42, 0.4);
+          backdrop-filter: blur(4px);
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          z-index: 1000;
+        }
+
+        .chargily-modal-content {
+          background: white;
+          width: 90%;
+          max-width: 440px;
+          border-radius: 20px;
+          padding: 32px;
+          position: relative;
+          box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+        }
+
+        .chargily-modal-content.rtl {
+          direction: rtl;
+        }
+
+        .close-btn {
+          position: absolute;
+          top: 20px;
+          right: 20px;
+          background: none;
+          border: none;
+          color: #94A3B8;
+          cursor: pointer;
+          border-radius: 50%;
+          padding: 4px;
+          transition: all 0.2s;
+        }
+
+        .chargily-modal-content.rtl .close-btn {
+          right: auto;
+          left: 20px;
+        }
+
+        .close-btn:hover {
+          background: #F1F5F9;
+          color: #0F172A;
+        }
+
+        .modal-header h2 {
+          margin: 0 0 8px 0;
+          font-size: 24px;
+          font-weight: 800;
+          color: #0F172A;
+        }
+
+        .modal-header p {
+          margin: 0 0 24px 0;
+          color: #64748B;
+          font-size: 14px;
+          line-height: 1.5;
+        }
+
+        .error-alert {
+          background: #FEF2F2;
+          color: #DC2626;
+          padding: 12px;
+          border-radius: 8px;
+          font-size: 14px;
+          font-weight: 600;
+          margin-bottom: 20px;
+          border: 1px solid #FECACA;
+        }
+
+        .form-group {
+          margin-bottom: 20px;
+        }
+
+        .form-group label {
+          display: block;
+          font-weight: 700;
+          color: #334155;
+          margin-bottom: 8px;
+          font-size: 14px;
+        }
+
+        .amount-input {
+          width: 100%;
+          padding: 14px 16px;
+          border: 2px solid #E2E8F0;
+          border-radius: 12px;
+          font-size: 16px;
+          font-weight: 700;
+          color: #0F172A;
+          outline: none;
+          transition: border-color 0.2s;
+        }
+
+        .amount-input:focus {
+          border-color: #5B21B6;
+        }
+
+        .form-actions {
+          display: flex;
+          gap: 12px;
+          margin-top: 12px;
+        }
+
+        .cancel-btn {
+          width: 35%;
+          padding: 16px;
+          background: #F1F5F9;
+          color: #475569;
+          border: none;
+          border-radius: 12px;
+          font-size: 16px;
+          font-weight: 800;
+          cursor: pointer;
+          transition: background 0.2s;
+        }
+
+        .cancel-btn:hover:not(:disabled) {
+          background: #E2E8F0;
+        }
+
+        .cancel-btn:disabled {
+          opacity: 0.7;
+          cursor: not-allowed;
+        }
+
+        .submit-pay-btn {
+          flex: 1;
+          padding: 16px;
+          background: #5B21B6;
+          color: white;
+          border: none;
+          border-radius: 12px;
+          font-size: 16px;
+          font-weight: 800;
+          cursor: pointer;
+          margin-top: 12px;
+          transition: background 0.2s;
+        }
+
+        .submit-pay-btn:hover:not(:disabled) {
+          background: #4C1D95;
+        }
+
+        .submit-pay-btn:disabled {
+          opacity: 0.7;
+          cursor: not-allowed;
+        }
+      `}} />
+    </div>
+  );
+};
+
+export default ChargilyWithdrawModal;

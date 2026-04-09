@@ -1,0 +1,37 @@
+.floating-lang-btn {
+  position: fixed;
+  bottom: 24px;
+  left: 24px;
+  z-index: 9999;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 12px 18px;
+  background: linear-gradient(135deg, #5B21B6, #7C3AED);
+  color: #fff;
+  border: none;
+  border-radius: 50px;
+  cursor: pointer;
+  font-family: 'Cairo', sans-serif;
+  font-size: 14px;
+  font-weight: 700;
+  box-shadow: 0 4px 20px rgba(124, 58, 237, 0.4);
+  transition: all 0.3s ease;
+}
+
+.floating-lang-btn:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 8px 30px rgba(124, 58, 237, 0.5);
+}
+
+.floating-lang-btn:active {
+  transform: translateY(0);
+}
+
+.lang-icon {
+  font-size: 18px;
+}
+
+.lang-text {
+  letter-spacing: 0.5px;
+}

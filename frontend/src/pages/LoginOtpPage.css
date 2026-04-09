@@ -1,0 +1,277 @@
+/* ═══ LOGIN OTP PAGE ═══ */
+.login-otp-root {
+  font-family: 'Cairo', sans-serif;
+  background: var(--bg-main, #f7f7f7);
+  display: flex;
+  min-height: 100vh;
+  position: relative;
+  overflow: hidden;
+}
+
+.login-otp-root::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  background-image: radial-gradient(circle, rgba(124, 58, 237, .12) 1.5px, transparent 1.5px);
+  background-size: 48px 48px;
+}
+
+/* BRAND PANEL (Reuse from Login) */
+.login-otp-root .brand {
+  flex: 0 0 45%;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  padding: 60px 80px;
+  background: linear-gradient(155deg, #10202d 0%, #1a2f40 100%);
+  color: #fff;
+  position: relative;
+}
+
+.login-otp-root .brand-logo {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 56px;
+}
+
+.login-otp-root .brand-logo-img { height: 42px; }
+.login-otp-root .brand-logo-name { font-size: 22px; font-weight: 800; color: #fff; }
+.login-otp-root .brand-logo-name span { color: rgba(255,255,255,.6); }
+
+.login-otp-root .brand-h1 { font-size: 48px; font-weight: 900; line-height: 1.1; margin-bottom: 12px; }
+.login-otp-root .brand-h1 span { display: block; }
+
+.login-otp-root .brand-underline {
+  width: 72px;
+  height: 4px;
+  background: rgba(255, 255, 255, 0.4);
+  border-radius: 2px;
+  margin-bottom: 24px;
+}
+
+.login-otp-root .brand-sub { font-size: 16px; color: rgba(255, 255, 255, 0.7); max-width: 400px; line-height: 1.6; }
+
+/* FORM PANEL */
+.login-otp-root .form-side {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 40px;
+}
+
+.form-box {
+  width: 100%;
+  max-width: 480px;
+  background: #fff;
+  border-radius: 24px;
+  padding: 48px;
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.05);
+  animation: otpSlideUp 0.5s ease both;
+}
+
+@keyframes otpSlideUp {
+  from { opacity: 0; transform: translateY(20px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.form-title { font-size: 28px; font-weight: 800; color: #10202d; margin-bottom: 4px; text-align: center; }
+.form-sub { font-size: 14px; color: #64748B; text-align: center; margin-bottom: 32px; }
+
+/* TABS */
+.otp-tabs {
+  display: flex;
+  background: #F1F5F9;
+  padding: 4px;
+  border-radius: 14px;
+  margin-bottom: 32px;
+}
+
+.otp-tab {
+  flex: 1;
+  padding: 10px;
+  font-size: 14px;
+  font-weight: 700;
+  border-radius: 10px;
+  color: #64748B;
+  transition: all 0.2s ease;
+}
+
+.otp-tab.active {
+  background: #fff;
+  color: #7C3AED;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+}
+
+.otp-tab:hover:not(.active) {
+  color: #10202d;
+}
+
+/* FIELDS */
+.fg { margin-bottom: 24px; position: relative; }
+.fg label { display: block; font-size: 12px; font-weight: 700; color: #1e293b; margin-bottom: 8px; }
+
+.input-with-icon { position: relative; width: 100%; }
+.input-with-icon .icon {
+  position: absolute;
+  left: 14px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: #94A3B8;
+  display: flex;
+  align-items: center;
+}
+
+[dir="rtl"] .input-with-icon .icon { left: auto; right: 14px; }
+
+.input-with-icon input {
+  width: 100%;
+  height: 52px;
+  padding: 0 16px 0 44px;
+  border: 1.5px solid #E2E8F0;
+  border-radius: 12px;
+  font-size: 15px;
+  background: #F8FAFC;
+  transition: all 0.2s;
+}
+
+[dir="rtl"] .input-with-icon input { padding: 0 44px 0 16px; }
+
+.input-with-icon input:focus {
+  border-color: #7C3AED;
+  background: #fff;
+  box-shadow: 0 0 0 4px rgba(124, 58, 237, 0.1);
+}
+
+/* ACTION BUTTON */
+.btn-primary {
+  width: 100%;
+  height: 52px;
+  background: linear-gradient(135deg, #5B21B6, #7C3AED);
+  color: #fff;
+  border-radius: 12px;
+  font-size: 16px;
+  font-weight: 800;
+  box-shadow: 0 6px 20px rgba(124, 58, 237, 0.35);
+  margin-top: 10px;
+}
+
+.btn-primary:hover:not(:disabled) {
+  transform: translateY(-2px);
+  box-shadow: 0 10px 28px rgba(124, 58, 237, 0.5);
+}
+
+.btn-primary:active { transform: translateY(0); }
+
+/* FOOTER */
+.form-foot { margin-top: 24px; text-align: center; }
+.back-to-login {
+  font-size: 14px;
+  font-weight: 700;
+  color: #7C3AED;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+}
+
+.back-to-login:hover { text-decoration: underline; }
+
+/* LANG TOGGLE */
+.lang-toggle {
+  position: absolute;
+  top: 20px;
+  right: 20px;
+  background: #fff;
+  border: 1.5px solid #E2E8F0;
+  border-radius: 50px;
+  padding: 6px 16px;
+  font-size: 12px;
+  font-weight: 800;
+  color: #7C3AED;
+  z-index: 10;
+}
+
+.relative-fg {
+  position: relative;
+}
+
+.phone-overlay {
+  position: absolute;
+  inset: 0;
+  top: 24px; /* Below the label */
+  background: rgba(15, 26, 45, 0.65);
+  backdrop-filter: blur(4px);
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 20;
+  border: 1.5px solid rgba(124, 58, 237, 0.3);
+  animation: overlayFadeIn 0.3s ease both;
+}
+
+.overlay-badge {
+  background: #7C3AED;
+  color: #fff;
+  padding: 6px 16px;
+  border-radius: 100px;
+  font-size: 13px;
+  font-weight: 800;
+  box-shadow: 0 4px 12px rgba(124, 58, 237, 0.4);
+}
+
+@keyframes overlayFadeIn {
+  from { opacity: 0; transform: scale(0.98); }
+  to { opacity: 1; transform: scale(1); }
+}
+
+.lang-toggle {
+  position: fixed;
+  top: 24px;
+  right: 24px;
+  z-index: 9999;
+  background: rgba(255, 255, 255, 0.95);
+  border: 1.5px solid rgba(124, 58, 237, 0.22);
+  border-radius: 100px;
+  padding: 8px 18px;
+  font-size: 13px;
+  font-weight: 800;
+  color: #7C3AED;
+  cursor: pointer;
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.08);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.lang-toggle:hover {
+  background: #fff;
+  transform: scale(1.05);
+  box-shadow: 0 10px 28px rgba(124, 58, 237, 0.18);
+  border-color: #7C3AED;
+}
+
+.lang-toggle:active {
+  transform: scale(0.98);
+}
+
+[dir="rtl"] .lang-toggle {
+  right: auto;
+  left: 24px;
+}
+
+@media (max-width: 1024px) {
+  .login-otp-root .brand { display: none; }
+  .login-otp-root .form-side { flex: 1; min-height: 100vh; }
+}
+
+@media (max-width: 480px) {
+  .form-box { padding: 32px 24px; border-radius: 20px; }
+  .form-title { font-size: 24px; }
+}

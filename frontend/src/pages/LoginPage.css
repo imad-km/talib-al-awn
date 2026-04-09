@@ -1,0 +1,94 @@
+/* ═══ LOGIN PAGE — from login.html ═══ */
+.login-root{font-family:'Cairo',sans-serif;background:var(--bg,#f7f7f7);display:flex;min-height:100vh;overflow:hidden;position:relative}
+.login-root *,.login-root *::before,.login-root *::after{box-sizing:border-box;margin:0;padding:0}
+.login-root a{text-decoration:none;color:inherit}
+
+.login-root::before{content:'';position:fixed;inset:0;pointer-events:none;background-image:radial-gradient(circle,rgba(124,58,237,.12) 1.5px,transparent 1.5px),radial-gradient(circle,rgba(124,58,237,.07) 1px,transparent 1px);background-size:48px 48px,24px 24px;background-position:0 0,12px 12px}
+
+/* BRAND PANEL */
+.login-root .brand{flex:0 0 45%;display:flex;flex-direction:column;justify-content:center;padding:60px 56px;position:relative;overflow:hidden;background:linear-gradient(155deg,#10202d 0%,#1a2f40 60%,#243d52 100%)}
+.login-root .brand::after{content:'';position:absolute;bottom:-80px;left:-60px;width:500px;height:500px;border-radius:50%;background:radial-gradient(circle,rgba(255,255,255,.07) 0%,transparent 70%);pointer-events:none}
+.login-root .brand-logo{display:flex;align-items:center;gap:12px;margin-bottom:56px}
+.login-root .brand-logo-img{height:42px;width:auto;object-fit:contain}
+.login-root .brand-logo-name{font-size:22px;font-weight:800;color:#fff;letter-spacing:-.02em}
+.login-root .brand-logo-name span{color:rgba(255,255,255,.65)}
+.login-root .brand-h1{font-size:clamp(40px,4.5vw,62px);font-weight:900;line-height:1.15;color:#fff;margin-bottom:6px}
+.login-root .brand-h1 span{display:block}
+.login-root .brand-underline{width:72px;height:4px;background:rgba(255,255,255,.5);border-radius:2px;margin-bottom:20px}
+.login-root .brand-sub{font-size:16px;font-weight:400;color:rgba(255,255,255,.65);line-height:1.7;max-width:420px}
+.login-root .brand-stats{display:flex;gap:0;margin-top:36px;border:1.5px solid rgba(124,58,237,0.3);border-radius:16px;overflow:hidden;background:rgba(124,58,237,0.10)}
+.login-root .bstat{flex:1;padding:18px 20px;border-left:1.5px solid rgba(255,255,255,.15);text-align:center}
+.login-root .bstat:last-child{border-left:none}
+.login-root .bstat-num{font-size:24px;font-weight:800;color:#fff;margin-bottom:3px}
+.login-root .bstat-lbl{font-size:12px;font-weight:500;color:rgba(255,255,255,.55)}
+
+/* FORM PANEL */
+.login-root .form-side{flex:1;display:flex;align-items:center;justify-content:center;padding:40px 32px;position:relative}
+.login-root .form-side::before{content:'';position:absolute;top:-60px;right:-80px;width:320px;height:320px;border-radius:50%;background:rgba(124,58,237,.07);pointer-events:none}
+.login-root .form-side::after{content:'';position:absolute;bottom:-80px;left:-60px;width:280px;height:280px;border-radius:50%;background:rgba(124,58,237,.05);pointer-events:none}
+.login-root .form-box{width:100%;max-width:520px;background:#fff;border-radius:24px;padding:40px 48px;box-shadow:0 8px 40px rgba(0,0,0,.07);position:relative;z-index:1;animation:loginSlideUp .5s ease both}
+@keyframes loginSlideUp{from{opacity:0;transform:translateY(24px)}to{opacity:1;transform:translateY(0)}}
+.login-root .form-title{font-size:28px;font-weight:800;color:var(--text,#10202d);margin-bottom:4px;text-align:center}
+.login-root .form-sub{font-size:14px;color:var(--text3,#6b7c8a);text-align:center;margin-bottom:24px}
+
+/* ALERT */
+.login-root .alert{display:none;padding:12px 16px;border-radius:10px;font-size:13px;font-weight:600;margin-bottom:14px;background:#FFF0F0;color:#EF4444;border:1px solid #FFCDD2}
+.login-root .alert.show{display:block}
+
+/* FIELDS */
+.login-root .fg{position:relative;margin-bottom:14px}
+.login-root .fg label{display:block;font-size:12px;font-weight:600;color:var(--text2,#2a3d4d);margin-bottom:6px}
+.login-root .fg input{width:100%;height:48px;padding:0 44px 0 16px;border:1.5px solid rgba(124,58,237,.20);border-radius:12px;font-family:'Cairo',sans-serif;font-size:14px;color:var(--text,#10202d);background:var(--bg,#f7f7f7);transition:border-color .2s,box-shadow .2s}
+.login-root .fg input:focus{outline:none;border-color:#7C3AED;box-shadow:0 0 0 3px rgba(124,58,237,.15)}
+.login-root .fg-icon{position:absolute;right:14px;bottom:0;height:48px;pointer-events:none;display:flex;align-items:center;color:var(--text3,#6b7c8a)}
+.login-root .pwd-toggle{position:absolute;right:14px;bottom:0;height:48px;background:none;border:none;cursor:pointer;color:var(--text3,#6b7c8a);display:flex;align-items:center;padding:0;transition:color .15s}
+.login-root .pwd-toggle:hover{color:#7C3AED}
+
+[dir="ltr"] .login-root .fg-icon{right:auto;left:14px}
+[dir="ltr"] .login-root .pwd-toggle{right:auto;left:14px}
+[dir="ltr"] .login-root .fg input{padding:0 16px 0 44px}
+
+.login-root .row-meta{display:flex;align-items:center;justify-content:space-between;margin-bottom:20px}
+.login-root .remember{display:flex;align-items:center;gap:8px;font-size:13px;color:var(--text2,#2a3d4d);cursor:pointer}
+.login-root .remember input[type=checkbox]{width:18px;height:18px;border-radius:5px;accent-color:#5a9e6f;cursor:pointer}
+.login-root .forgot{font-size:13px;font-weight:600;color:#7C3AED}
+.login-root .forgot:hover{text-decoration:underline}
+
+/* BUTTON */
+.login-root .btn-green{width:100%;height:52px;border-radius:12px;border:none;cursor:pointer;background:linear-gradient(135deg,#5B21B6,#7C3AED);color:#fff;font-family:'Cairo',sans-serif;font-size:16px;font-weight:800;display:flex;align-items:center;justify-content:center;gap:8px;box-shadow:0 6px 20px rgba(124,58,237,.40);transition:transform .18s,box-shadow .18s;position:relative}
+.login-root .btn-green:hover{transform:translateY(-2px);box-shadow:0 10px 28px rgba(124,58,237,.55)}
+.login-root .btn-green:active{transform:translateY(0)}
+.login-root .btn-green:disabled{opacity:.6;cursor:not-allowed;transform:none}
+.login-root .spinner{width:20px;height:20px;border:2.5px solid rgba(255,255,255,.4);border-top-color:#fff;border-radius:50%;display:none;animation:loginSpin .7s linear infinite}
+.login-root .btn-green.loading .spinner{display:block}
+.login-root .btn-green.loading .btn-label{display:none}
+@keyframes loginSpin{to{transform:rotate(360deg)}}
+
+/* DIVIDER */
+.login-root .divider{display:flex;align-items:center;gap:12px;margin:18px 0;color:var(--text3,#6b7c8a);font-size:13px}
+.login-root .divider::before,.login-root .divider::after{content:'';flex:1;height:1px;background:rgba(124,58,237,.20)}
+
+/* SOCIAL */
+.login-root .social-row{display:flex;gap:12px;margin-bottom:20px}
+.login-root .btn-social{flex:1;height:46px;border:1.5px solid rgba(124,58,237,.20);border-radius:12px;background:#fff;cursor:pointer;font-family:'Cairo',sans-serif;font-size:14px;font-weight:600;color:var(--text2,#2a3d4d);display:flex;align-items:center;justify-content:center;gap:8px;transition:border-color .2s,background .2s}
+.login-root .btn-social:hover{border-color:#7C3AED;background:#EDE9FE}
+.login-root .btn-social.coming-soon{position:relative;cursor:not-allowed;opacity:0.8}
+.login-root .btn-social.coming-soon:hover{border-color:rgba(124,58,237,.2);background:#fff}
+.login-root .btn-social.coming-soon::after{content:attr(data-tooltip);position:absolute;top:-34px;left:50%;transform:translateX(-50%) translateY(10px);background:#10202d;color:#fff;font-size:11px;font-weight:700;padding:6px 12px;border-radius:6px;white-space:nowrap;opacity:0;visibility:hidden;transition:all .2s ease;box-shadow:0 10px 20px rgba(0,0,0,.15);z-index:10}
+.login-root .btn-social.coming-soon:hover::after{opacity:1;visibility:visible;transform:translateX(-50%) translateY(0)}
+
+.login-root .form-foot{text-align:center;font-size:14px;color:var(--text3,#6b7c8a);margin-top:18px}
+.login-root .form-foot a{color:#7C3AED;font-weight:700}
+.login-root .form-foot a:hover{text-decoration:underline}
+
+.login-root .otp-link{width:100%;margin-top:12px;padding:14px;border-radius:12px;border:1.5px solid rgba(124,58,237,.20);background:transparent;cursor:pointer;font-family:'Cairo',sans-serif;font-size:14px;font-weight:600;color:var(--text2,#2a3d4d);display:flex;align-items:center;justify-content:space-between;transition:border-color .2s,background .2s}
+.login-root .otp-link:hover{border-color:#7C3AED;background:#EDE9FE;color:#5B21B6}
+
+/* LANG TOGGLE */
+.login-root .lang-toggle{position:fixed;top:24px;right:24px;z-index:9999;background:rgba(255,255,255,.95);border:1.5px solid rgba(124,58,237,.22);border-radius:100px;padding:8px 18px;font-size:13px;font-weight:800;cursor:pointer;font-family:'Cairo',sans-serif;color:#7C3AED;transition:all .2s cubic-bezier(0.4,0,0.2,1);box-shadow:0 6px 20px rgba(0,0,0,0.08);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);display:flex;align-items:center;justify-content:center}
+.login-root .lang-toggle:hover{background:#fff;transform:scale(1.05);box-shadow:0 10px 28px rgba(124,58,237,.18);border-color:#7C3AED}
+.login-root .lang-toggle:active{transform:scale(0.98)}
+[dir="rtl"] .login-root .lang-toggle{right:auto;left:24px}
+
+@media(max-width:1024px){.login-root .brand{display:none}.login-root .form-side{flex:1;width:100%}}
+@media(max-width:480px){.login-root .form-box{border-radius:20px;padding:32px 24px}.login-root .form-title{font-size:24px}}
