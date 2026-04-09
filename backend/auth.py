@@ -1,9 +1,3 @@
-"""
-Talib-Awn · طالب عون — Flask Backend + Static Server
-Serves static HTML/CSS/JS files AND /api/* routes on port 5000.
-Database: MySQL (Railway)
-"""
-
 import os, bcrypt, random, string, time, smtplib, threading
 from datetime import timedelta, datetime, timezone
 from email.mime.text import MIMEText
