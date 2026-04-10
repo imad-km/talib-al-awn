@@ -11,6 +11,8 @@ import StudentDashboard from './pages/StudentDashboard';
 import EmployerDashboard from './pages/EmployerDashboard';
 import OtpPage from './pages/OtpPage';
 import LoginOtpPage from './pages/LoginOtpPage';
+import AICVBuilderPage from './pages/AICVBuilderPage';
+import AIChatWidget from "./components/AIChatWidget";
 import './index.css';
 
 function App() {
@@ -18,6 +20,9 @@ function App() {
     <LanguageProvider>
       <Router>
         <FloatingLangBtn />
+        <>
+      <AIChatWidget />
+      {/* your routes */}
         <Routes>
           <Route path="/" element={<LandingPage />} />
           <Route path="/login" element={<LoginPage />} />
@@ -25,7 +30,7 @@ function App() {
           <Route path="/forgot-password" element={<ForgotPassword />} />
           <Route path="/otp" element={<OtpPage />} />
           <Route path="/login-otp" element={<LoginOtpPage />} />
-          
+          <Route path="/ai-cv" element={<AICVBuilderPage />} />
           {/* Admin Routes */}
           <Route path="/admin/*" element={<AdminPanel />} />
           
@@ -38,6 +43,7 @@ function App() {
           {/* Catch-all redirect to landing */}
           <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>
+      </>
       </Router>
     </LanguageProvider>
   );
