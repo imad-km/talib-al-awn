@@ -33,3 +33,7 @@ DB_PORT     = 3306
 DB_USER     = "zitadokm"
 DB_PASSWORD = "i2006imadalge"
 DB_NAME     = "talib"
+
+CHARGILY_API_KEY  = "test_sk_bqpzX0rThK1ohs8iXJPMoGYXMLgmQ9kDDCVkByqX"
+CHARGILY_BASE_URL = "https://pay.chargily.net/test/api/v2"
+APP_BASE_URL      = "http://localhost:5000"

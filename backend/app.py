@@ -13,6 +13,7 @@ from routes.deals         import deals_bp
 from routes.ratings       import ratings_bp
 from routes.admin         import admin_bp
 from routes.users         import users_bp
+from routes.payments      import payments_bp
 
 app = Flask(__name__)
 app.config['JWT_SECRET_KEY']            = config.JWT_SECRET_KEY
@@ -29,6 +30,7 @@ app.register_blueprint(deals_bp)
 app.register_blueprint(ratings_bp)
 app.register_blueprint(admin_bp)
 app.register_blueprint(users_bp)
+app.register_blueprint(payments_bp)
 
 
 @app.before_request

@@ -143,9 +143,10 @@ def init_db():
         status             VARCHAR(40) DEFAULT 'idle',
         employer_confirmed TINYINT(1) DEFAULT 0,
         student_confirmed  TINYINT(1) DEFAULT 0,
-        deposit_deadline   DATETIME,
-        created_at         TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-        updated_at         TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+        deposit_deadline      DATETIME,
+        chargily_checkout_id  VARCHAR(255),
+        created_at            TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+        updated_at            TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
         FOREIGN KEY (conversation_id) REFERENCES conversations(id) ON DELETE CASCADE,
         FOREIGN KEY (employer_id)     REFERENCES users(id),
         FOREIGN KEY (student_id)      REFERENCES users(id)
@@ -203,6 +204,7 @@ def init_db():
     for col_sql in [
         "ALTER TABLE users ADD COLUMN is_banned TINYINT(1) DEFAULT 0",
         "ALTER TABLE users ADD COLUMN ban_reason TEXT",
+        "ALTER TABLE deals ADD COLUMN chargily_checkout_id VARCHAR(255)",
     ]:
         try:
             cur.execute(col_sql)
