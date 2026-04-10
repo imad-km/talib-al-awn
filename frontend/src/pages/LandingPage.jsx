@@ -246,10 +246,10 @@ const LandingPage = () => {
           <div id="auto-play" data-carousel='{"isAutoPlay":true,"speed":4000}'>
             <div className="carousel">
               <div className="carousel-body opacity-0">
-                <div className="carousel-slide"><div><img src="/assets/img_1.png" alt="Feature 1" /></div></div>
-                <div className="carousel-slide"><div><img src="/assets/img_2.png" alt="Feature 2" /></div></div>
-                <div className="carousel-slide"><div><img src="/assets/img_3.png" alt="Feature 3" /></div></div>
-                <div className="carousel-slide"><div><img src="/assets/img_4.png" alt="Feature 4" /></div></div>
+                <div class="carousel-slide"><div><img src="/assets/img_1.webp" alt="Feature 1" /></div></div>
+                <div class="carousel-slide"><div><img src="/assets/img_2.webp" alt="Feature 2" /></div></div>
+                <div class="carousel-slide"><div><img src="/assets/img_3.webp" alt="Feature 3" /></div></div>
+                <div class="carousel-slide"><div><img src="/assets/img_4.webp" alt="Feature 4" /></div></div>
               </div>
             </div>
             <button type="button" className="carousel-prev">
@@ -375,7 +375,7 @@ const LandingPage = () => {
               <h2 className="pay-title">{t('landing.pay.title')}</h2>
               <p className="pay-desc">{t('landing.pay.desc')}</p>
             </div>
-            <div className="pay-card-wrap reveal rd2"><div className="pay-card-glow"></div><img className="pay-card-img" src="/assets/edahabia.png" alt="Edahabia payment card" /></div>
+            <div class="pay-card-wrap reveal rd2"><div class="pay-card-glow"></div><img class="pay-card-img" src="/assets/edahabia.webp" alt="Edahabia payment card" /></div>
           </div>
         </div>
       </section>

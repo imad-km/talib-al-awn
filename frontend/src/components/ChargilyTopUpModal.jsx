@@ -240,7 +240,7 @@ const ChargilyTopUpModal = ({ onClose }) => {
         }
 
         .logo-placeholder.edahabia {
-          background-image: url('/assets/edahabia.png');
+          background-image: url('/assets/edahabia.webp');
           background-color: #f1f5f9;
         }
 

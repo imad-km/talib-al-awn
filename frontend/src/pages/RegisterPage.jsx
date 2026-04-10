@@ -341,13 +341,13 @@ const RegisterPage = () => {
               <div className="role-grid">
                 <div className={`role-card${role === 'student' ? ' selected' : ''}`} onClick={() => pickRole('student')}>
                   <div className="role-check">✓</div>
-                  <img src="/assets/icons/student.png" alt="" className="role-icon" onError={e => { e.target.style.display = 'none'; }} />
+                  <img src="/assets/icons/student.webp" alt="" className="role-icon" onError={e => { e.target.style.display = 'none'; }} />
                   <div className="role-title">{t('regStudentTitle')}</div>
                   <div className="role-desc">{t('regStudentDesc')}</div>
                 </div>
                 <div className={`role-card${role === 'employer' ? ' selected' : ''}`} onClick={() => pickRole('employer')}>
                   <div className="role-check">✓</div>
-                  <img src="/assets/icons/employer.png" alt="" className="role-icon" onError={e => { e.target.style.display = 'none'; }} />
+                  <img src="/assets/icons/employer.webp" alt="" className="role-icon" onError={e => { e.target.style.display = 'none'; }} />
                   <div className="role-title">{t('regEmployerTitle')}</div>
                   <div className="role-desc">{t('regEmployerDesc')}</div>
                 </div>
@@ -376,7 +376,7 @@ const RegisterPage = () => {
               <div className="upload-grid">
                 <div className="upload-box">
                   <input type="file" accept="image/*" onChange={handleCard} />
-                  <div className="upload-box-icon"><img src="/assets/icons/upload.png" alt="upload" /></div>
+                  <div className="upload-box-icon"><img src="/assets/icons/upload.webp" alt="upload" /></div>
                   <div className="upload-box-title">{t('uploadBoxUploadTitle')}</div>
                   <div className="upload-box-sub">{t('uploadBoxUploadSub')}</div>
                   <div className="btn-upload">{t('uploadBoxUploadBtn')}</div>
@@ -385,7 +385,7 @@ const RegisterPage = () => {
                 <div className="upload-or">{t('uploadOr')}</div>
                 <div className="upload-box">
                   <input type="file" accept="image/*" capture="environment" onChange={handleCard} />
-                  <div className="upload-box-icon"><img src="/assets/icons/camera.png" alt="camera" /></div>
+                  <div className="upload-box-icon"><img src="/assets/icons/camera.webp" alt="camera" /></div>
                   <div className="upload-box-title">{t('uploadBoxCamTitle')}</div>
                   <div className="upload-box-sub">{t('uploadBoxCamSub')}</div>
                   <div className="btn-upload">{t('uploadBoxCamBtn')}</div>

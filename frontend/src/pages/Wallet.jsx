@@ -486,8 +486,8 @@ const walletStyles = `
   .bank-item.active { border-color: var(--primary); background: var(--primary-light); }
   .bank-item.coming-soon { opacity: 0.6; pointer-events: none; background: #F8FAFC; }
   .bank-logo { width: 40px; height: 40px; border-radius: 8px; background: var(--bg-hover); }
-  .bank-logo.chargily { background: white url('/assets/Chargily-logo.png') center/contain no-repeat; background-size: 80%; border: 1px solid #E2E8F0; }
-  .bank-logo.dahabia  { background: url('/assets/edahabia.png') center/cover; }
+  .bank-logo.chargily { background: white url('/assets/Chargily-logo.webp') center/contain no-repeat; background-size: 80%; border: 1px solid #E2E8F0; }
+  .bank-logo.dahabia  { background: url('/assets/edahabia.webp') center/cover; }
   .bank-info { flex: 1; display: flex; flex-direction: column; }
   .bank-name { font-size: 14px; font-weight: 700; color: var(--text-main); }
   .bank-acc  { font-size: 12px; color: var(--text-muted); }
