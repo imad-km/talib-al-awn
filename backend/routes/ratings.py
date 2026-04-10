@@ -4,15 +4,18 @@ from flask_jwt_extended import jwt_required, get_jwt_identity
 
 from database import db_query, db_insert
 from utils.helpers import ok, err, row_to_dict, rows_to_list
+from utils.security import rate_limit, sanitize_json, sanitize_str, validate_int_id
 
 ratings_bp = Blueprint('ratings', __name__)
 
 
 @ratings_bp.route('/api/deals/<int:cid>/rate', methods=['POST'])
 @jwt_required()
+@rate_limit('default')
 def rate_user(cid):
+    if not validate_int_id(cid): return err('معرف غير صالح', 400)
     uid  = int(get_jwt_identity())
-    data = request.json or {}
+    data = sanitize_json(request.get_json(silent=True) or {})
 
     deal = db_query(
         "SELECT * FROM deals WHERE conversation_id=%s AND status IN ('secured','completed')",
@@ -28,7 +31,7 @@ def rate_user(cid):
 
     rated_id = deal['student_id'] if is_employer else deal['employer_id']
     score    = data.get('score')
-    comment  = data.get('comment', '').strip() or None
+    comment  = sanitize_str(data.get('comment', ''), 500) or None
 
     if score is None or not isinstance(score, int) or not (1 <= score <= 5):
         return err('التقييم يجب أن يكون بين 1 و 5')
@@ -46,7 +49,9 @@ def rate_user(cid):
 
 
 @ratings_bp.route('/api/ratings/<int:user_id>', methods=['GET'])
+@rate_limit('default')
 def get_user_ratings(user_id):
+    if not validate_int_id(user_id): return err('معرف غير صالح', 400)
     rows = db_query(
         'SELECT r.*, u.name AS rater_name, u.avatar_url AS rater_avatar '
         'FROM ratings r JOIN users u ON r.rater_id=u.id '
@@ -67,7 +72,9 @@ def get_user_ratings(user_id):
 
 @ratings_bp.route('/api/ratings/<int:rating_id>', methods=['DELETE'])
 @jwt_required()
+@rate_limit('default')
 def delete_rating(rating_id):
+    if not validate_int_id(rating_id): return err('معرف غير صالح', 400)
     uid    = int(get_jwt_identity())
     rating = db_query('SELECT * FROM ratings WHERE id=%s AND rater_id=%s', (rating_id, uid), fetchone=True)
     if not rating:

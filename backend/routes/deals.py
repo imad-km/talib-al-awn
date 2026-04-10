@@ -5,6 +5,7 @@ from flask_jwt_extended import jwt_required, get_jwt_identity
 
 from database import db_query, db_insert
 from utils.helpers import ok, err, row_to_dict, rows_to_list
+from utils.security import rate_limit, sanitize_json, sanitize_str, validate_int_id
 
 deals_bp = Blueprint('deals', __name__)
 
@@ -19,7 +20,9 @@ def calc_fee(daily, months):
 
 @deals_bp.route('/api/deals/<int:cid>', methods=['GET'])
 @jwt_required()
+@rate_limit('default')
 def get_deal(cid):
+    if not validate_int_id(cid): return err('معرف غير صالح', 400)
     deal = db_query('SELECT * FROM deals WHERE conversation_id=%s ORDER BY id DESC LIMIT 1', (cid,), fetchone=True)
     if not deal: return ok(None)
     d = row_to_dict(deal)
@@ -31,14 +34,14 @@ def get_deal(cid):
 
 @deals_bp.route('/api/deals/<int:cid>/start', methods=['POST'])
 @jwt_required()
+@rate_limit('default')
 def start_deal(cid):
+    if not validate_int_id(cid): return err('معرف غير صالح', 400)
     uid      = int(get_jwt_identity())
     existing = db_query("SELECT id, status FROM deals WHERE conversation_id=%s AND status!='cancelled'", (cid,), fetchone=True)
     if existing: return err('هناك صفقة نشطة بالفعل')
-
     conv = db_query('SELECT id FROM conversations WHERE id=%s AND employer_id=%s', (cid, uid), fetchone=True)
     if not conv: return err('غير مصرح', 403)
-
     row = db_insert(
         'INSERT INTO deals (conversation_id, employer_id, status) VALUES (%s,%s,%s)',
         (cid, uid, 'employer_started'),
@@ -49,7 +52,9 @@ def start_deal(cid):
 
 @deals_bp.route('/api/deals/<int:cid>/accept', methods=['POST'])
 @jwt_required()
+@rate_limit('default')
 def accept_deal(cid):
+    if not validate_int_id(cid): return err('معرف غير صالح', 400)
     uid  = int(get_jwt_identity())
     deal = db_query("SELECT * FROM deals WHERE conversation_id=%s AND status='employer_started'", (cid,), fetchone=True)
     if not deal: return err('لا توجد صفقة في انتظار القبول')
@@ -64,8 +69,10 @@ def accept_deal(cid):
 
 @deals_bp.route('/api/deals/<int:cid>/form', methods=['PUT'])
 @jwt_required()
+@rate_limit('default')
 def update_deal_form(cid):
-    data = request.json or {}
+    if not validate_int_id(cid): return err('معرف غير صالح', 400)
+    data = sanitize_json(request.get_json(silent=True) or {})
     deal = db_query("SELECT * FROM deals WHERE conversation_id=%s AND status='form'", (cid,), fetchone=True)
     if not deal: return err('لا يمكن تعديل النموذج الآن')
     allowed = ['daily_salary','duration_months','start_date','payment_date','instructions']
@@ -77,7 +84,9 @@ def update_deal_form(cid):
 
 @deals_bp.route('/api/deals/<int:cid>/confirm', methods=['POST'])
 @jwt_required()
+@rate_limit('default')
 def confirm_deal(cid):
+    if not validate_int_id(cid): return err('معرف غير صالح', 400)
     uid  = int(get_jwt_identity())
     deal = db_query("SELECT * FROM deals WHERE conversation_id=%s AND status='form'", (cid,), fetchone=True)
     if not deal: return err('لا توجد اتفاقية في مرحلة التأكيد')
@@ -111,7 +120,9 @@ def confirm_deal(cid):
 
 @deals_bp.route('/api/deals/<int:cid>/deposit', methods=['POST'])
 @jwt_required()
+@rate_limit('default')
 def deposit_deal(cid):
+    if not validate_int_id(cid): return err('معرف غير صالح', 400)
     uid  = int(get_jwt_identity())
     deal = db_query("SELECT * FROM deals WHERE conversation_id=%s AND status='deposit_pending'", (cid,), fetchone=True)
     if not deal: return err('لا توجد صفقة في انتظار الإيداع')
@@ -129,7 +140,9 @@ def deposit_deal(cid):
 
 @deals_bp.route('/api/deals/<int:cid>/payments', methods=['GET'])
 @jwt_required()
+@rate_limit('default')
 def deal_payments(cid):
+    if not validate_int_id(cid): return err('معرف غير صالح', 400)
     deal = db_query('SELECT id FROM deals WHERE conversation_id=%s ORDER BY id DESC LIMIT 1', (cid,), fetchone=True)
     if not deal: return ok([])
     rows = db_query('SELECT * FROM payments WHERE deal_id=%s ORDER BY month_number', (deal['id'],), fetchall=True)
@@ -138,7 +151,9 @@ def deal_payments(cid):
 
 @deals_bp.route('/api/deals/<int:cid>/cancel', methods=['POST'])
 @jwt_required()
+@rate_limit('default')
 def cancel_deal(cid):
+    if not validate_int_id(cid): return err('معرف غير صالح', 400)
     deal = db_query('SELECT id FROM deals WHERE conversation_id=%s', (cid,), fetchone=True)
     if deal:
         db_query('UPDATE deals SET status=%s WHERE id=%s', ('cancelled', deal['id']), commit=True)

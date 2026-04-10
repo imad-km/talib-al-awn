@@ -5,6 +5,7 @@ from database import db_query
 from config import PLATFORM_NAME
 from utils.helpers import ok, err, rows_to_list
 from utils.email import send_email, invite_html
+from utils.security import rate_limit, sanitize_json, sanitize_str, validate_email, validate_int_id
 
 admin_bp = Blueprint('admin', __name__)
 
@@ -18,6 +19,7 @@ def _require_admin(uid):
 
 @admin_bp.route('/api/admin/stats', methods=['GET'])
 @jwt_required()
+@rate_limit('default')
 def admin_stats():
     uid = int(get_jwt_identity())
     if not _require_admin(uid): return err('غير مصرح', 403)
@@ -30,6 +32,7 @@ def admin_stats():
 
 @admin_bp.route('/api/admin/users', methods=['GET'])
 @jwt_required()
+@rate_limit('default')
 def admin_users():
     uid = int(get_jwt_identity())
     if not _require_admin(uid): return err('غير مصرح', 403)
@@ -43,16 +46,17 @@ def admin_users():
 
 @admin_bp.route('/api/admin/ban', methods=['POST'])
 @jwt_required()
+@rate_limit('default')
 def admin_ban():
     uid = int(get_jwt_identity())
     if not _require_admin(uid): return err('غير مصرح', 403)
 
-    data      = request.json or {}
+    data      = sanitize_json(request.get_json(silent=True) or {})
     target_id = data.get('user_id')
-    reason    = (data.get('reason') or '').strip()
+    reason    = sanitize_str(data.get('reason', ''), 500)
 
-    if not target_id: return err('user_id مطلوب')
-    if not reason:    return err('سبب الحظر مطلوب')
+    if not target_id or not validate_int_id(target_id): return err('user_id غير صالح')
+    if not reason: return err('سبب الحظر مطلوب')
 
     target = db_query('SELECT id, role, is_banned FROM users WHERE id=%s', (target_id,), fetchone=True)
     if not target:                return err('المستخدم غير موجود', 404)
@@ -65,13 +69,14 @@ def admin_ban():
 
 @admin_bp.route('/api/admin/unban', methods=['POST'])
 @jwt_required()
+@rate_limit('default')
 def admin_unban():
     uid = int(get_jwt_identity())
     if not _require_admin(uid): return err('غير مصرح', 403)
 
-    data      = request.json or {}
+    data      = sanitize_json(request.get_json(silent=True) or {})
     target_id = data.get('user_id')
-    if not target_id: return err('user_id مطلوب')
+    if not target_id or not validate_int_id(target_id): return err('user_id غير صالح')
 
     target = db_query('SELECT id, is_banned FROM users WHERE id=%s', (target_id,), fetchone=True)
     if not target:              return err('المستخدم غير موجود', 404)
@@ -83,15 +88,16 @@ def admin_unban():
 
 @admin_bp.route('/api/admin/invite', methods=['POST'])
 @jwt_required()
+@rate_limit('default')
 def admin_invite():
     uid = int(get_jwt_identity())
     if not _require_admin(uid): return err('غير مصرح', 403)
 
-    data     = request.json or {}
-    to_email = (data.get('email') or '').strip()
-    to_name  = data.get('name', '')
+    data     = sanitize_json(request.get_json(silent=True) or {})
+    to_email = sanitize_str(data.get('email', ''), 255)
+    to_name  = sanitize_str(data.get('name', ''), 100)
 
-    if not to_email: return err('البريد الإلكتروني مطلوب')
+    if not validate_email(to_email): return err('البريد الإلكتروني غير صالح')
 
     send_email(to_email, f'دعوة للانضمام إلى {PLATFORM_NAME}', invite_html(to_name))
     return ok({'message': f'تم إرسال الدعوة إلى {to_email}'})

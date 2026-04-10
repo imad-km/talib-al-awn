@@ -4,15 +4,17 @@ from flask_jwt_extended import jwt_required, get_jwt_identity
 
 from database import db_query, db_insert
 from utils.helpers import ok, err, row_to_dict, rows_to_list
+from utils.security import rate_limit, sanitize_json, sanitize_str, validate_int_id
 
 jobs_bp = Blueprint('jobs', __name__)
 
 
 @jobs_bp.route('/api/jobs', methods=['GET'])
+@rate_limit('default')
 def list_jobs():
-    wilaya   = request.args.get('wilaya')
-    category = request.args.get('category')
-    search   = request.args.get('q')
+    wilaya   = sanitize_str(request.args.get('wilaya', ''), 100)
+    category = sanitize_str(request.args.get('category', ''), 100)
+    search   = sanitize_str(request.args.get('q', ''), 100)
     sql  = 'SELECT j.*, u.name AS employer_name FROM jobs j JOIN users u ON j.employer_id=u.id WHERE j.status=%s'
     args = ['open']
     if wilaya:   sql += ' AND j.wilaya=%s';     args.append(wilaya)
@@ -25,22 +27,29 @@ def list_jobs():
 
 @jobs_bp.route('/api/jobs', methods=['POST'])
 @jwt_required()
+@rate_limit('default')
 def create_job():
     uid  = int(get_jwt_identity())
-    data = request.json or {}
+    data = sanitize_json(request.get_json(silent=True) or {})
+    title = sanitize_str(data.get('title', ''), 255)
+    if not title: return err('عنوان الوظيفة مطلوب')
     row  = db_insert(
         'INSERT INTO jobs (employer_id,title,description,category,wilaya,work_type,daily_salary,required_skills) '
         'VALUES (%s,%s,%s,%s,%s,%s,%s,%s)',
-        (uid, data.get('title'), data.get('description'), data.get('category'),
-         data.get('wilaya'), data.get('work_type', 'partial'),
-         data.get('daily_salary', 0), data.get('required_skills', '')),
+        (uid, title, sanitize_str(data.get('description', ''), 2000),
+         sanitize_str(data.get('category', ''), 100),
+         sanitize_str(data.get('wilaya', ''), 100),
+         sanitize_str(data.get('work_type', 'partial'), 50),
+         data.get('daily_salary', 0), sanitize_str(data.get('required_skills', ''), 500)),
         'jobs'
     )
     return ok(row_to_dict(row)), 201
 
 
 @jobs_bp.route('/api/jobs/<int:jid>', methods=['GET'])
+@rate_limit('default')
 def get_job(jid):
+    if not validate_int_id(jid): return err('معرف غير صالح', 400)
     row = db_query(
         'SELECT j.*, u.name AS employer_name, u.wilaya AS employer_wilaya, '
         '  COALESCE(ROUND(AVG(r.score),1),0) AS employer_rating, '
@@ -56,9 +65,11 @@ def get_job(jid):
 
 @jobs_bp.route('/api/jobs/<int:jid>', methods=['PUT'])
 @jwt_required()
+@rate_limit('default')
 def update_job(jid):
+    if not validate_int_id(jid): return err('معرف غير صالح', 400)
     uid  = int(get_jwt_identity())
-    data = request.json or {}
+    data = sanitize_json(request.get_json(silent=True) or {})
     allowed = ['title','description','category','wilaya','work_type','daily_salary','required_skills','status']
     sets = ', '.join(f"{k}=%s" for k in allowed if k in data)
     vals = [data[k] for k in allowed if k in data] + [jid, uid]
@@ -69,7 +80,9 @@ def update_job(jid):
 
 @jobs_bp.route('/api/jobs/<int:jid>', methods=['DELETE'])
 @jwt_required()
+@rate_limit('default')
 def delete_job(jid):
+    if not validate_int_id(jid): return err('معرف غير صالح', 400)
     uid = int(get_jwt_identity())
     db_query('UPDATE jobs SET status=%s WHERE id=%s AND employer_id=%s', ('deleted', jid, uid), commit=True)
     return ok({'message': 'تم حذف الوظيفة'})
@@ -77,6 +90,7 @@ def delete_job(jid):
 
 @jobs_bp.route('/api/applications', methods=['GET'])
 @jwt_required()
+@rate_limit('default')
 def list_applications():
     uid  = int(get_jwt_identity())
     user = db_query('SELECT role FROM users WHERE id=%s', (uid,), fetchone=True)
@@ -99,15 +113,16 @@ def list_applications():
 
 @jobs_bp.route('/api/applications', methods=['POST'])
 @jwt_required()
+@rate_limit('default')
 def apply_job():
     uid  = int(get_jwt_identity())
-    data = request.json or {}
+    data = sanitize_json(request.get_json(silent=True) or {})
     jid  = data.get('job_id')
-    if not jid: return err('معرف الوظيفة مطلوب')
+    if not jid or not validate_int_id(jid): return err('معرف الوظيفة مطلوب وصالح')
     try:
         row = db_insert(
             'INSERT INTO applications (job_id, student_id, cover_letter) VALUES (%s,%s,%s)',
-            (jid, uid, data.get('cover_letter', '')),
+            (jid, uid, sanitize_str(data.get('cover_letter', ''), 2000)),
             'applications'
         )
         return ok(row_to_dict(row)), 201
@@ -117,9 +132,11 @@ def apply_job():
 
 @jobs_bp.route('/api/applications/<int:aid>', methods=['PUT'])
 @jwt_required()
+@rate_limit('default')
 def update_application(aid):
-    data   = request.json or {}
-    status = data.get('status')
+    if not validate_int_id(aid): return err('معرف غير صالح', 400)
+    data   = sanitize_json(request.get_json(silent=True) or {})
+    status = sanitize_str(data.get('status', ''), 20)
     if status not in ('pending', 'accepted', 'rejected'):
         return err('حالة غير صالحة')
     db_query('UPDATE applications SET status=%s WHERE id=%s', (status, aid), commit=True)

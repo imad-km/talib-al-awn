@@ -1,10 +1,11 @@
 import os
-from flask import Flask, jsonify
+from flask import Flask, jsonify, request
 from flask_jwt_extended import JWTManager
 from flask_cors import CORS
 
 import config
 from database import init_db
+from utils.security import add_security_headers, scan_request_for_injection
 from routes.auth          import auth_bp
 from routes.jobs          import jobs_bp
 from routes.conversations import conversations_bp
@@ -14,9 +15,9 @@ from routes.admin         import admin_bp
 from routes.users         import users_bp
 
 app = Flask(__name__)
-app.config['JWT_SECRET_KEY']           = config.JWT_SECRET_KEY
-app.config['JWT_ACCESS_TOKEN_EXPIRES'] = config.JWT_ACCESS_TOKEN_EXPIRES
-app.config['JWT_REFRESH_TOKEN_EXPIRES']= config.JWT_REFRESH_TOKEN_EXPIRES
+app.config['JWT_SECRET_KEY']            = config.JWT_SECRET_KEY
+app.config['JWT_ACCESS_TOKEN_EXPIRES']  = config.JWT_ACCESS_TOKEN_EXPIRES
+app.config['JWT_REFRESH_TOKEN_EXPIRES'] = config.JWT_REFRESH_TOKEN_EXPIRES
 
 CORS(app, supports_credentials=True, origins=config.CORS_ORIGINS)
 JWTManager(app)
@@ -30,9 +31,24 @@ app.register_blueprint(admin_bp)
 app.register_blueprint(users_bp)
 
 
+@app.before_request
+def global_guard():
+    if request.method in ('POST', 'PUT', 'PATCH'):
+        ct = request.content_type or ''
+        if request.data and 'application/json' not in ct:
+            return jsonify({'ok': False, 'error': 'Content-Type must be application/json'}), 415
+    if scan_request_for_injection():
+        return jsonify({'ok': False, 'error': 'Invalid input'}), 400
+
+
+@app.after_request
+def security_headers(response):
+    return add_security_headers(response)
+
+
 @app.route('/')
 def health():
-    return jsonify({'ok': True, 'message': 'Talib-Awn API is running ✅'})
+    return jsonify({'ok': True, 'message': 'Talib-Awn API is running'})
 
 
 @app.route('/api/health', methods=['GET'])
@@ -52,13 +68,13 @@ def health_check():
 try:
     init_db()
 except Exception as e:
-    print(f"⚠️  Database init failed: {e}")
-    print("⚠️  Make sure DATABASE_URL is set in Railway environment variables!")
+    print(f"Database init failed: {e}")
+    print("Make sure DATABASE_URL is set in Railway environment variables!")
 
 
 if __name__ == '__main__':
     port = int(os.environ.get('PORT', 5000))
     db_url = os.environ.get('DATABASE_URL')
-    print(f"🚀 Talib-Awn backend starting on port {port}...")
-    print(f"🔗 DB URL configured: {'Yes' if db_url else 'No'}")
-    app.run(host='0.0.0.0', port=port, debug=True)
+    print(f"Talib-Awn backend starting on port {port}...")
+    print(f"DB URL configured: {'Yes' if db_url else 'No'}")
+    app.run(host='0.0.0.0', port=port, debug=False)
