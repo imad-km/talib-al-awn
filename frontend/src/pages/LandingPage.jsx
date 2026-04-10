@@ -513,7 +513,7 @@ const LandingPage = () => {
             </div>
             <div className="pay-card-wrap reveal rd2">
               <div className="pay-card-glow"></div>
-              <img className="pay-card-img" src="/assets/edahabia.png" alt="Edahabia payment card" />
+              <img className="pay-card-img" src="/assets/edahabia.webp" alt="Edahabia payment card" />
             </div>
           </div>
         </div>
