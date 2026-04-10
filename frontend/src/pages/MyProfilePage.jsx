@@ -261,6 +261,36 @@ const MyProfilePage = () => {
           <DocumentTextIcon style={{ width: 20, height: 20, color: '#fff' }} />
           <h2 style={S.cardTitle}>{t('cvSection')}</h2>
         </div>
+        <button
+          style={{
+            display: 'inline-flex',
+            alignItems: 'center',
+            gap: 8,
+            padding: '10px 18px',
+            borderRadius: 12,
+            border: 'none',
+            background: 'linear-gradient(135deg,#7c3aed,#4f46e5)',
+            color: '#ffffff',
+            fontWeight: 700,
+            fontSize: 13,
+            cursor: 'pointer',
+            fontFamily: 'inherit',
+            marginBottom: 16,
+            transition: 'all 0.2s ease',
+            boxShadow: '0 4px 14px rgba(124,58,237,0.25)',
+          }}
+          onMouseEnter={e => {
+            e.currentTarget.style.transform = 'translateY(-2px)';
+            e.currentTarget.style.boxShadow = '0 8px 22px rgba(124,58,237,0.35)';
+          }}
+          onMouseLeave={e => {
+            e.currentTarget.style.transform = 'translateY(0)';
+            e.currentTarget.style.boxShadow = '0 4px 14px rgba(124,58,237,0.25)';
+          }}
+          onClick={() => navigate('/ai-cv')}
+        >
+          🪄 {t('generateCV') || 'Generate CV with AI'}
+        </button>
 
         {profile.cvUrl ? (
           /* CV exists */
