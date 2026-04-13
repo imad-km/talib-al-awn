@@ -94,7 +94,7 @@ const RegisterPage = () => {
       setAlert('');
 
       try {
-        const apiKey = ('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').trim();
+        const apiKey = import.meta.env.VITE_GROQ_API_KEY;
         if (!apiKey) throw new Error("No API Key");
 
         const resp = await fetch('https://api.groq.com/openai/v1/chat/completions', {
