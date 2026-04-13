@@ -1,321 +1,475 @@
-import React, { useState } from 'react';
-import { MapPin, Star, Clock, Banknote, User } from 'lucide-react';
+import React, { useState, useRef, useEffect } from 'react';
+import { MapPin, Star, Clock, Banknote, Heart, MoreHorizontal, ExternalLink } from 'lucide-react';
 import { useLanguage } from '../context/LanguageContext';
 import ApplyModal from './ApplyModal';
 
-const AVATAR_GRADIENTS = [
-  ['#C4B5FD', '#8B5CF6'],
-  ['#A5B4FC', '#6366F1'],
-  ['#6EE7B7', '#10B981'],
-  ['#FCD34D', '#F59E0B'],
-  ['#FCA5A5', '#EF4444'],
-];
-
-const JobCard = ({ job }) => {
+const JobCard = ({ job = {} }) => {
   const { t, lang } = useLanguage();
   const isRtl = lang === 'ar';
   const [showApply, setShowApply] = useState(false);
   const [liked, setLiked] = useState(false);
+  const [showDetailsPopup, setShowDetailsPopup] = useState(false);
+  const popupRef = useRef(null);
 
-  const seed = (job.employer || job.name || 'E').charCodeAt(0);
-  const [gradFrom, gradTo] = AVATAR_GRADIENTS[seed % AVATAR_GRADIENTS.length];
-  const initial = (job.employer || job.name || 'E').charAt(0).toUpperCase();
+  useEffect(() => {
+    function handleClickOutside(event) {
+      if (popupRef.current && !popupRef.current.contains(event.target)) {
+        setShowDetailsPopup(false);
+      }
+    }
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, []);
 
+  // Fallbacks for the premium aesthetic requested by user
+  const employerName = job.employer || 'PixelTech Global';
+  const jobTitle = job.name || 'Senior Product Designer';
+  const location = job.location || 'New York City, NY';
+  const description = job.description || 'Lead the design direction for our core user-facing platforms, platforms, creative and impactful experiences.';
+  
   const expLabel = {
     beginner: isRtl ? 'مبتدئ' : 'Beginner',
     medium:   isRtl ? 'متوسط' : 'Medium',
     expert:   isRtl ? 'خبير'  : 'Expert',
-  }[job.experience?.toLowerCase()] || job.experience || '—';
+  }[job.experience?.toLowerCase()] || job.experience || '5+ Years Exp';
+
+  const workTime = job.workTime || 'Full-time';
+  const salary = job.salary || '$350/Day';
+  const postedAgo = job.postedAgo || '2 days ago';
+
+  const typeLabel = {
+    partTime: isRtl ? 'دوام جزئي' : 'Part Time',
+    fullTime: isRtl ? 'دوام كامل' : 'Full Time'
+  }[job.type] || job.type || 'Full Time';
+
+  const initial = employerName.charAt(0).toUpperCase();
 
   return (
     <>
-      <div className={`jc-card ${isRtl ? 'rtl' : 'ltr'}`}>
-        <span className="jc-sparkle sp1">✦</span>
-        <span className="jc-sparkle sp2">✦</span>
-        <span className="jc-sparkle sp3">✦</span>
+      <div className={`jc-supercard-wrapper ${isRtl ? 'rtl' : 'ltr'}`}>
+        {/* Render only the component (Background elements moved to global scope) */}
 
-        <div className="jc-header">
-          <div className="jc-avatar" style={{ background: `linear-gradient(135deg, ${gradFrom}, ${gradTo})` }}>
-            {job.employerAvatar
-              ? <img src={job.employerAvatar} alt={initial} className="jc-avatar-img" />
-              : <span className="jc-avatar-letter">{initial}</span>
-            }
-          </div>
-
-          <div className="jc-title-block">
-            <h3 className="jc-job-title">{job.name || '—'}</h3>
-            <div className="jc-location">
-              <MapPin size={11} strokeWidth={2.5} />
-              <span>{job.location || '—'}</span>
-            </div>
-            {job.employer && (
-              <div className="jc-employer-tag">
-                <User size={10} strokeWidth={2.5} />
-                <span>{job.employer}</span>
+        <div className="jc-supercard">
+          {/* Header Section */}
+          <div className="jc-header">
+            <div className="jc-header-left">
+              <div className="jc-avatar-container">
+                <div className="jc-avatar-halo">
+                  <div className="jc-avatar-inner">
+                    {job.employerAvatar ? (
+                      <img src={job.employerAvatar} alt={initial} />
+                    ) : (
+                      <span className="jc-avatar-letter">{initial}</span>
+                    )}
+                  </div>
+                </div>
               </div>
-            )}
-          </div>
 
-          <div className="jc-header-actions">
-            <button
-              className={`jc-like-btn ${liked ? 'liked' : ''}`}
-              onClick={() => setLiked(v => !v)}
-              aria-label="save"
-            >
-              <svg viewBox="0 0 24 24" fill={liked ? 'currentColor' : 'none'} stroke="currentColor" strokeWidth="2" width="16" height="16">
-                <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z" />
-              </svg>
-            </button>
-            <div className="jc-badge">{t('partTime')}</div>
-          </div>
-        </div>
+              <div className="jc-title-area">
+                <h3 className="jc-title">{jobTitle}</h3>
+                <div className="jc-subtitle">
+                  <span className="jc-employer">{employerName}</span>
+                  <span className="jc-dot">•</span>
+                  <MapPin size={14} className="jc-icon-pin" strokeWidth={2.5} />
+                  <span className="jc-location">{location}</span>
+                </div>
+              </div>
+            </div>
 
-        <p className="jc-desc">{job.description || '—'}</p>
+            <div className="jc-header-right">
+              <div className="jc-type-badge">
+                {typeLabel}
+              </div>
+              <div ref={popupRef} style={{ position: 'relative' }}>
+                <button 
+                  className="jc-more-btn" 
+                  onClick={() => setShowDetailsPopup(!showDetailsPopup)}
+                >
+                  <MoreHorizontal size={20} color="#9ca3af" />
+                </button>
 
-        <div className="jc-stats">
-          <div className="jc-stat">
-            <span className="jc-stat-icon icon-star">
-              <Star size={13} strokeWidth={2} />
-            </span>
-            <div className="jc-stat-text">
-              <span className="jc-stat-label">{t('expNeeded')}</span>
-              <span className="jc-stat-val">{expLabel}</span>
+                {showDetailsPopup && (
+                  <div className="jc-details-popup">
+                    <h4 className="jc-popup-title">{t('jobDetails') || 'Job Details'}</h4>
+                    <div className="jc-popup-item">
+                      <span className="jc-popup-lbl">{t('employerProfile') || 'View Profile'}:</span>
+                      <a href={`/employer/${job.employerId || 1}`} className="jc-popup-link" target="_blank" rel="noreferrer">
+                        <ExternalLink size={16} />
+                      </a>
+                    </div>
+                    <div className="jc-popup-item">
+                      <span className="jc-popup-lbl">{t('category') || 'Category'}:</span>
+                      <span className="jc-popup-val">{job.category || 'N/A'}</span>
+                    </div>
+                    <div className="jc-popup-item">
+                      <span className="jc-popup-lbl">{t('jobType') || 'Type'}:</span>
+                      <span className="jc-popup-val">{typeLabel}</span>
+                    </div>
+                    <div className="jc-popup-item">
+                      <span className="jc-popup-lbl">{t('wilaya') || 'Wilaya'}:</span>
+                      <span className="jc-popup-val">{job.wilaya || 'N/A'}</span>
+                    </div>
+                    <div className="jc-popup-item">
+                      <span className="jc-popup-lbl">{t('workTime') || 'Work Time'}:</span>
+                      <span className="jc-popup-val">{workTime}</span>
+                    </div>
+                  </div>
+                )}
+              </div>
             </div>
           </div>
-          <div className="jc-stat-divider" />
-          <div className="jc-stat">
-            <span className="jc-stat-icon icon-clock">
-              <Clock size={13} strokeWidth={2} />
-            </span>
-            <div className="jc-stat-text">
-              <span className="jc-stat-label">{t('workTime')}</span>
-              <span className="jc-stat-val">{job.workTime || '—'}</span>
-            </div>
-          </div>
-          <div className="jc-stat-divider" />
-          <div className="jc-stat">
-            <span className="jc-stat-icon icon-money">
-              <Banknote size={13} strokeWidth={2} />
-            </span>
-            <div className="jc-stat-text">
-              <span className="jc-stat-label">{t('dailySalary')}</span>
-              <span className="jc-stat-val">{job.salary || '—'}</span>
-            </div>
-          </div>
-        </div>
 
-        <div className="jc-footer">
-          <span className="jc-posted">
-            {t('postedTime').replace('{time}', job.postedAgo || (isRtl ? '20 دقيقة' : '20 min'))}
-          </span>
-          <button className="jc-apply-btn" onClick={() => setShowApply(true)}>
-            {t('apply')}
-          </button>
+          {/* Job Description Section */}
+          <div className="jc-body">
+            <p className="jc-description">{description}</p>
+          </div>
+
+          {/* Job Details (Tags) Section */}
+          <div className="jc-tags">
+            <div className="jc-tag">
+              <Star size={15} className="jc-tag-icon" strokeWidth={2} />
+              <span>{expLabel}</span>
+            </div>
+            <div className="jc-tag">
+              <Clock size={15} className="jc-tag-icon" strokeWidth={2} />
+              <span>{workTime}</span>
+            </div>
+            <div className="jc-tag">
+              <Banknote size={15} className="jc-tag-icon" strokeWidth={2} />
+              <span>{salary}</span>
+            </div>
+          </div>
+
+          {/* Footer Section */}
+          <div className="jc-footer">
+    <div className="jc-posted-time">
+      {t('stats.postedTime', `Posted ${postedAgo}`).replace('{time}', postedAgo)}
+    </div>
+            <div className="jc-actions">
+              <button
+                className={`jc-heart-btn ${liked ? 'liked' : ''}`}
+                onClick={() => setLiked(!liked)}
+                onMouseEnter={(e) => e.currentTarget.style.transform = 'scale(1.1)'}
+                onMouseLeave={(e) => e.currentTarget.style.transform = 'scale(1)'}
+              >
+                <Heart size={18} fill={liked ? '#ef4444' : 'none'} color={liked ? '#ef4444' : '#9ca3af'} strokeWidth={liked ? 0 : 2} />
+              </button>
+              <button className="jc-apply" onClick={() => setShowApply(true)}>
+                Apply Now
+              </button>
+            </div>
+          </div>
         </div>
       </div>
 
       {showApply && <ApplyModal job={job} onClose={() => setShowApply(false)} />}
 
       <style dangerouslySetInnerHTML={{ __html: `
-        .jc-card {
+        /* Parent Wrapper */
+        .jc-supercard-wrapper {
           position: relative;
-          background: linear-gradient(145deg, #F5F0FF 0%, #EDE9FE 60%, #E9E3FD 100%);
-          border: 1.5px solid rgba(196, 181, 253, 0.5);
-          border-radius: 22px;
-          padding: 22px 22px 18px;
+          width: 100%;
           display: flex;
           flex-direction: column;
-          gap: 14px;
-          overflow: hidden;
-          cursor: default;
-          transition: transform 0.25s cubic-bezier(0.34,1.56,0.64,1),
-                      box-shadow 0.25s ease,
-                      border-color 0.25s ease;
-          will-change: transform;
-        }
-        .jc-card:hover {
-          transform: translateY(-6px) scale(1.012);
-          box-shadow:
-            0 20px 50px rgba(109, 40, 217, 0.16),
-            0 6px 20px rgba(109, 40, 217, 0.10),
-            inset 0 1px 0 rgba(255,255,255,0.8);
-          border-color: rgba(139, 92, 246, 0.6);
+          z-index: 1;
         }
 
-        /* Sparkle decorations */
-        .jc-sparkle {
-          position: absolute;
-          font-size: 14px;
-          color: rgba(167, 139, 250, 0.4);
-          pointer-events: none;
-          transition: opacity 0.25s, transform 0.25s;
-          line-height: 1;
+        /* Base Card styling - Premium aesthetic */
+        .jc-supercard {
+          position: relative;
+          background: rgba(255, 255, 255, 0.65);
+          backdrop-filter: blur(24px) saturate(160%);
+          -webkit-backdrop-filter: blur(24px) saturate(160%);
+          border-radius: 20px;
+          border: 1px solid rgba(255, 255, 255, 0.85);
+          box-shadow: 
+            0 10px 30px rgba(0, 0, 0, 0.03),
+            inset 0 1px 0 rgba(255, 255, 255, 1);
+          padding: 24px;
+          transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+          z-index: 2;
         }
-        .jc-card:hover .jc-sparkle { opacity: 0.9; }
-        .sp1 { top: 16px; left: 50%; font-size: 10px; color: rgba(196,181,253,0.5); }
-        .sp2 { bottom: 60px; right: 18px; font-size: 8px; color: rgba(167,139,250,0.35); }
-        .sp3 { top: 50%; left: 22px; font-size: 7px; color: rgba(196,181,253,0.4); }
+
+        .jc-supercard:hover {
+          transform: translateY(-4px);
+          box-shadow: 
+            0 20px 40px rgba(0, 0, 0, 0.06),
+            0 10px 20px rgba(0, 0, 0, 0.04),
+            0 0 0 1px rgba(255, 255, 255, 1),
+            inset 0 1px 0 rgba(255, 255, 255, 1);
+        }
 
         /* Header */
         .jc-header {
           display: flex;
           align-items: flex-start;
+          justify-content: space-between;
+          margin-bottom: 20px;
+        }
+
+        .jc-header-left {
+          display: flex;
+          align-items: center;
+          gap: 16px;
+        }
+
+        .jc-header-right {
+          display: flex;
+          align-items: center;
           gap: 12px;
         }
-        .jc-avatar {
-          width: 52px; height: 52px;
+
+        .jc-type-badge {
+          background: rgba(124, 58, 237, 0.1);
+          color: #7C3AED;
+          border: 1px solid rgba(124, 58, 237, 0.2);
+          padding: 5px 12px;
+          border-radius: 100px;
+          font-size: 11px;
+          font-weight: 800;
+          text-transform: uppercase;
+          letter-spacing: 0.5px;
+        }
+
+        .jc-more-btn {
+          background: transparent;
+          border: 1px solid transparent;
           border-radius: 50%;
-          display: flex; align-items: center; justify-content: center;
-          flex-shrink: 0;
-          box-shadow: 0 4px 12px rgba(109, 40, 217, 0.25);
-          transition: transform 0.25s;
-        }
-        .jc-card:hover .jc-avatar { transform: scale(1.08); }
-        .jc-avatar-img { width: 100%; height: 100%; border-radius: 50%; object-fit: cover; }
-        .jc-avatar-letter {
-          font-size: 20px; font-weight: 800;
-          color: white; text-shadow: 0 1px 4px rgba(0,0,0,0.2);
-        }
-        .jc-title-block {
-          flex: 1; min-width: 0;
-          display: flex; flex-direction: column; gap: 3px;
-        }
-        .jc-job-title {
-          font-size: 17px; font-weight: 800;
-          color: #1E1B4B; margin: 0;
-          white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
-        }
-        .jc-location {
-          display: flex; align-items: center; gap: 4px;
-          color: #6B7280; font-size: 11px; font-weight: 600;
-        }
-        .jc-employer-tag {
-          display: flex; align-items: center; gap: 3px;
-          color: #8B5CF6; font-size: 11px; font-weight: 700;
-          margin-top: 1px;
-        }
-        .jc-header-actions {
-          display: flex; flex-direction: column;
-          align-items: flex-end; gap: 8px; flex-shrink: 0;
-        }
-        .jc-like-btn {
-          background: rgba(255,255,255,0.7);
-          border: 1.5px solid rgba(196,181,253,0.5);
-          border-radius: 50%;
-          width: 30px; height: 30px;
+          width: 32px; height: 32px;
           display: flex; align-items: center; justify-content: center;
           cursor: pointer;
-          color: #C4B5FD;
-          transition: color 0.2s, background 0.2s, border-color 0.2s, transform 0.15s;
-        }
-        .jc-like-btn:hover { transform: scale(1.15); border-color: #8B5CF6; color: #7C3AED; background: white; }
-        .jc-like-btn.liked { color: #E45454; border-color: #FCA5A5; background: #FFF5F5; }
-        .jc-badge {
-          background: rgba(255,255,255,0.75);
-          border: 1.5px solid rgba(196,181,253,0.6);
-          border-radius: 100px;
-          padding: 3px 10px;
-          font-size: 11px; font-weight: 700;
-          color: #6D28D9;
-          white-space: nowrap;
-          backdrop-filter: blur(4px);
+          transition: all 0.2s;
         }
 
-        /* Description */
-        .jc-desc {
-          font-size: 13px; line-height: 1.6;
-          color: #4B5563; margin: 0;
-          display: -webkit-box;
-          -webkit-line-clamp: 2;
-          -webkit-box-orient: vertical;
-          overflow: hidden;
+        .jc-more-btn:hover {
+          background: rgba(0,0,0,0.04);
+          border-color: rgba(0,0,0,0.1);
         }
 
-        /* Stats */
-        .jc-stats {
-          background: rgba(255,255,255,0.6);
-          border: 1px solid rgba(221,214,254,0.7);
-          border-radius: 14px;
-          padding: 12px 16px;
+        .jc-details-popup {
+          position: absolute;
+          top: calc(100% + 8px);
+          inset-inline-end: 0;
+          background: rgba(255, 255, 255, 0.95);
+          backdrop-filter: blur(20px);
+          -webkit-backdrop-filter: blur(20px);
+          border: 1px solid #E2E8F0;
+          border-radius: 16px;
+          padding: 20px;
+          min-width: 220px;
+          box-shadow: 0 10px 30px rgba(0,0,0,0.08);
+          z-index: 100;
           display: flex;
-          align-items: center;
-          gap: 0;
-          backdrop-filter: blur(8px);
-        }
-        .jc-stat {
-          flex: 1;
-          display: flex;
-          align-items: center;
-          gap: 8px;
-        }
-        .jc-stat-divider {
-          width: 1px; height: 32px;
-          background: rgba(196,181,253,0.4);
-          flex-shrink: 0;
-          margin: 0 4px;
-        }
-        .jc-stat-icon {
-          width: 30px; height: 30px;
-          border-radius: 8px;
-          display: flex; align-items: center; justify-content: center;
-          flex-shrink: 0;
-        }
-        .icon-star  { background: #FEF9C3; color: #D97706; }
-        .icon-clock { background: #FFEDD5; color: #EA580C; }
-        .icon-money { background: #DCFCE7; color: #16A34A; }
-        .jc-stat-text {
-          display: flex; flex-direction: column; gap: 1px;
-          min-width: 0;
-        }
-        .jc-stat-label {
-          font-size: 10px; font-weight: 700;
-          color: #9CA3AF; text-transform: uppercase;
-          white-space: nowrap; letter-spacing: 0.3px;
-        }
-        .jc-stat-val {
-          font-size: 13px; font-weight: 800;
-          color: #1E1B4B;
-          white-space: nowrap;
+          flex-direction: column;
+          gap: 10px;
         }
 
-        /* Footer */
-        .jc-footer {
+        .jc-popup-title {
+          margin: 0 0 4px 0;
+          font-size: 15px;
+          font-weight: 800;
+          color: #0F172A;
+          border-bottom: 2px solid #F1F5F9;
+          padding-bottom: 8px;
+        }
+
+        .jc-popup-item {
           display: flex;
-          align-items: center;
           justify-content: space-between;
-          margin-top: 2px;
+          align-items: center;
+          font-size: 13px;
         }
-        .jc-posted {
-          font-size: 11px; font-weight: 600;
-          color: #9CA3AF;
+
+        .jc-popup-lbl {
+          color: #64748B;
+          font-weight: 600;
         }
-        .jc-apply-btn {
-          background: linear-gradient(135deg, #8B5CF6, #6D28D9);
+
+        .jc-popup-val {
+          color: #1E293B;
+          font-weight: 800;
+        }
+        
+        .jc-popup-link {
+          color: #7C3AED;
+          font-weight: 800;
+          text-decoration: none;
+          display: flex;
+          align-items: center;
+        }
+        .jc-popup-link:hover {
+          text-decoration: underline;
+        }
+
+        /* Avatar Section */
+        .jc-avatar-container {
+          position: relative;
+          flex-shrink: 0;
+        }
+        .jc-avatar-halo {
+          width: 60px; height: 60px;
+          border-radius: 50%;
+          padding: 3px;
+          background: conic-gradient(from 0deg, var(--primary), var(--accent), var(--secondary), var(--primary));
+          animation: rotate-halo 5s linear infinite;
+          box-shadow: 0 0 20px rgba(124, 58, 237, 0.2);
+        }
+        @keyframes rotate-halo {
+          100% { transform: rotate(360deg); }
+        }
+        .jc-avatar-inner {
+          width: 100%; height: 100%;
+          background: #ffffff;
+          border-radius: 50%;
+          display: flex; align-items: center; justify-content: center;
+          overflow: hidden;
+          animation: counter-rotate 5s linear infinite;
+        }
+        @keyframes counter-rotate {
+          100% { transform: rotate(-360deg); }
+        }
+        .jc-avatar-inner img { width: 100%; height: 100%; object-fit: cover; }
+        .jc-avatar-letter {
+          background: linear-gradient(135deg, var(--primary), var(--accent));
+          -webkit-background-clip: text;
+          -webkit-text-fill-color: transparent;
+          font-size: 28px;
+          font-weight: 900;
+        }
+
+        /* Title Area */
+        .jc-title-area {
+          display: flex; flex-direction: column; gap: 4px;
+        }
+        .jc-title {
+          font-size: 20px;
+          font-weight: 800;
+          color: #1f2937;
+          margin: 0;
+          letter-spacing: -0.3px;
+        }
+        .jc-subtitle {
+          display: flex; align-items: center; gap: 6px;
+          color: #6b7280;
+          font-size: 13px;
+          font-weight: 500;
+        }
+        .jc-employer {
+          font-weight: 700;
+          color: #4b5563;
+        }
+        .jc-dot { color: #d1d5db; font-size: 18px; }
+        .jc-icon-pin { color: #9ca3af; margin-right: -2px; }
+        .jc-location { font-weight: 500; }
+
+        /* Description Body */
+        .jc-body { margin-bottom: 20px; }
+        .jc-description {
+          font-size: 15px;
+          line-height: 1.5;
+          color: #4b5563;
+          margin: 0;
+          font-weight: 400;
+        }
+
+        /* Tags Section */
+        .jc-tags {
+          display: flex; flex-wrap: wrap; gap: 10px; margin-bottom: 24px;
+        }
+        .jc-tag {
+          display: flex; align-items: center; gap: 6px;
+          padding: 6px 14px;
+          background: rgba(255, 255, 255, 0.4);
+          border: 1px solid rgba(0,0,0,0.06);
+          border-radius: 100px;
+          font-size: 13px;
+          font-weight: 600;
+          color: #374151;
+          backdrop-filter: blur(8px);
+          -webkit-backdrop-filter: blur(8px);
+          box-shadow: 0 2px 6px rgba(0,0,0,0.02);
+        }
+        .jc-tag-icon { color: #9ca3af; }
+
+        /* Footer Section */
+        .jc-footer {
+          display: flex; align-items: center; justify-content: space-between;
+          padding-top: 6px;
+        }
+        .jc-posted-time {
+          font-size: 12.5px;
+          color: #9ca3af;
+          font-weight: 500;
+        }
+        .jc-actions {
+          display: flex; align-items: center; gap: 10px;
+        }
+        .jc-heart-btn {
+          background: white;
+          border: 1px solid #e5e7eb;
+          border-radius: 50%;
+          width: 36px; height: 36px;
+          display: flex; align-items: center; justify-content: center;
+          cursor: pointer;
+          transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+          box-shadow: 0 4px 10px rgba(0,0,0,0.03);
+        }
+        .jc-heart-btn:hover {
+          border-color: #d1d5db;
+          box-shadow: 0 6px 14px rgba(0,0,0,0.06);
+        }
+        .jc-heart-btn.liked {
+          border-color: #fecaca;
+          background: #fff5f5;
+        }
+
+        .jc-apply {
+          background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 50%, var(--accent) 100%);
+          background-size: 200% 200%;
           color: white;
           border: none;
-          border-radius: 100px;
-          padding: 9px 26px;
-          font-size: 13px; font-weight: 800;
+          border-radius: 14px;
+          padding: 10px 22px;
+          font-size: 14px;
+          font-weight: 800;
           cursor: pointer;
-          font-family: inherit;
-          transition: opacity 0.2s, transform 0.2s, box-shadow 0.2s;
-          box-shadow: 0 4px 14px rgba(109, 40, 217, 0.3);
+          box-shadow: 0 10px 25px rgba(124, 58, 237, 0.35), inset 0 1px 0 rgba(255,255,255,0.3);
+          transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+          position: relative;
+          overflow: hidden;
+          animation: gradient-shift 5s ease infinite;
         }
-        .jc-apply-btn:hover {
-          opacity: 0.92;
-          transform: translateY(-2px);
-          box-shadow: 0 6px 20px rgba(109, 40, 217, 0.4);
+        @keyframes gradient-shift {
+          0% { background-position: 0% 50%; }
+          50% { background-position: 100% 50%; }
+          100% { background-position: 0% 50%; }
         }
-        .jc-apply-btn:active { transform: translateY(0); }
+        .jc-apply::before {
+          content: '';
+          position: absolute;
+          top: 0; left: -100%; width: 100%; height: 100%;
+          background: linear-gradient(90deg, transparent, rgba(255,255,255,0.5), transparent);
+          transition: none;
+        }
+        .jc-apply:hover {
+          transform: translateY(-1.5px) scale(1.01);
+          box-shadow: 0 8px 18px rgba(147, 51, 234, 0.4), inset 0 1px 0 rgba(255,255,255,0.4);
+        }
+        .jc-apply:hover::before {
+          animation: shine 1.5s ease;
+        }
+        @keyframes shine {
+          0% { left: -100%; }
+          100% { left: 100%; }
+        }
 
-        /* RTL */
-        .jc-card.rtl .jc-header { direction: rtl; }
-        .jc-card.rtl .jc-footer { direction: rtl; }
-        .jc-card.rtl .jc-stats  { direction: rtl; }
-        .jc-card.rtl .jc-desc   { direction: rtl; }
-        .jc-card.rtl .sp1 { left: auto; right: 50%; }
-        .jc-card.rtl .sp2 { right: auto; left: 18px; }
-        .jc-card.rtl .sp3 { left: auto; right: 22px; }
+        /* RTL Specific Adjustments */
+        .jc-supercard-wrapper.rtl { direction: rtl; }
+        .jc-supercard-wrapper.rtl .jc-shard-1 { left: auto; right: -15px; transform: scaleX(-1) rotate(20deg); }
+        .jc-supercard-wrapper.rtl .jc-shard-2 { right: auto; left: -15px; transform: scaleX(-1) rotate(50deg); }
+        .jc-supercard-wrapper.rtl .jc-particle-1 { right: auto; left: -8px; }
+        .jc-supercard-wrapper.rtl .jc-particle-2 { left: auto; right: 30px; }
+        .jc-supercard-wrapper.rtl .jc-icon-pin { margin-right: 0; margin-left: -2px; }
       `}} />
     </>
   );

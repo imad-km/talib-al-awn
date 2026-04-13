@@ -63,44 +63,73 @@ const StudentHome = () => {
   const sampleJobs = JOB_DATA_HOME.map(j => ({ ...j[lang], salary: j.salary, workTime: j.workTime, experience: j.experience }));
   const activities = ACTIVITY_DATA.map(a => ({ ...a[lang], status: a.status, dot: a.dot }));
 
+  const STATS = [
+    { title: t('activeApps'), value: "3", icon: ClockIcon, color: '#7c3aed', bg: '#faf5ff', border: '#e9d5ff', delta: '2 maturing soon' },
+    { title: t('avgRating'), value: "4.7 ★", icon: StarIcon, color: '#f59e0b', bg: '#fffbeb', border: '#fde68a', delta: 'Based on 5 reviews' },
+    { title: t('wallet'), value: "12,500 Da", icon: BanknotesIcon, color: '#10B981', bg: '#f0fdf4', border: '#bbf7d0', delta: 'Total available' },
+    { title: t('completedJobs'), value: "12", icon: CheckCircleIcon, color: '#6366F1', bg: '#eff6ff', border: '#dbeafe', delta: '+2 this month' },
+  ];
+
+  const today = new Date().toLocaleDateString('en-GB', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' });
+
   return (
-    <div className="student-home">
-      <div className="welcome-banner">
-        <div className="welcome-text">
-          <span className="welcome-badge">
-            <BoltIcon className="badge-icon" />
-            {t('home')}
-          </span>
-          <h1 className="welcome-title">👋 Welcome back, {firstName}!</h1>
-          <div className="welcome-meta">
-            {student.university && (
-              <span className="welcome-meta-item">
-                <AcademicCapIcon style={{ width: 14, height: 14 }} />
-                {student.university}
-              </span>
-            )}
-            {student.wilaya && (
-              <span className="welcome-meta-item">
-                <MapPinIcon style={{ width: 14, height: 14 }} />
-                {student.wilaya}
-              </span>
-            )}
+    <div className="student-home" style={{ display: 'flex', flexDirection: 'column', gap: 32 }}>
+
+      {/* ── Header ── */}
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', flexWrap: 'wrap', gap: 16 }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 18 }}>
+          {/* Avatar */}
+          <div style={{ width: 64, height: 64, borderRadius: 18, background: 'linear-gradient(135deg, #7c3aed, #4f46e5)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 26, fontWeight: 900, color: '#fff', boxShadow: '0 8px 24px rgba(124,58,237,0.25)', flexShrink: 0 }}>
+            {student.name?.[0]?.toUpperCase() || 'S'}
           </div>
-          <p className="welcome-sub">{t('welcomeSub')}</p>
-        </div>
-        <div className="welcome-illustration">
-          <div className="illo-avatar">{student.name?.[0]?.toUpperCase() || 'S'}</div>
-          <div className="illo-circle c1" />
-          <div className="illo-circle c2" />
-          <div className="illo-circle c3" />
+          <div>
+            <p style={{ fontSize: 13, fontWeight: 600, color: '#94a3b8', margin: '0 0 2px', letterSpacing: '0.06em', textTransform: 'uppercase' }}>Welcome back</p>
+            <h1 style={{ fontSize: 32, fontWeight: 900, color: '#0f172a', margin: '0 0 4px', letterSpacing: '-0.5px' }}>{firstName}</h1>
+            {/* Uni + location pills */}
+            <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8, marginBottom: 2 }}>
+              {student.university && (
+                <span style={{ display: 'inline-flex', alignItems: 'center', gap: 5, fontSize: 12, fontWeight: 700, color: '#7c3aed', background: '#faf5ff', border: '1px solid #e9d5ff', padding: '3px 10px', borderRadius: 100 }}>
+                  <AcademicCapIcon style={{ width: 13, height: 13 }} />{student.university}
+                </span>
+              )}
+              {student.wilaya && (
+                <span style={{ display: 'inline-flex', alignItems: 'center', gap: 5, fontSize: 12, fontWeight: 700, color: '#0891b2', background: '#f0f9ff', border: '1px solid #bae6fd', padding: '3px 10px', borderRadius: 100 }}>
+                  <MapPinIcon style={{ width: 13, height: 13 }} />{student.wilaya}
+                </span>
+              )}
+              <span style={{ fontSize: 12, fontWeight: 500, color: '#94a3b8', alignSelf: 'center' }}>{today}</span>
+            </div>
+          </div>
         </div>
       </div>
 
-      <div className="stats-grid">
-        <StatCard title={t('activeApps')} value="3" icon={ClockIcon} color="#7C3AED" />
-        <StatCard title={t('avgRating')} value="4.7 ★" icon={StarIcon} color="#F59E0B" />
-        <StatCard title={t('wallet')} value="12,500 Da" icon={BanknotesIcon} color="#10B981" />
-        <StatCard title={t('completedJobs')} value="12" icon={CheckCircleIcon} color="#6366F1" />
+      {/* ── Stat Cards ── */}
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 20 }}>
+        {STATS.map((stat, i) => {
+          const Icon = stat.icon;
+          return (
+            <div
+              key={i}
+              style={{ background: '#fff', border: `1.5px solid ${stat.border}`, borderRadius: 20, padding: '22px 24px', display: 'flex', flexDirection: 'column', gap: 14, transition: 'transform 0.2s, box-shadow 0.2s', cursor: 'default', boxShadow: '0 2px 8px rgba(0,0,0,0.04)' }}
+              onMouseEnter={e => { e.currentTarget.style.transform = 'translateY(-4px)'; e.currentTarget.style.boxShadow = '0 12px 32px rgba(0,0,0,0.09)'; }}
+              onMouseLeave={e => { e.currentTarget.style.transform = 'none'; e.currentTarget.style.boxShadow = '0 2px 8px rgba(0,0,0,0.04)'; }}
+            >
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
+                <div style={{ width: 46, height: 46, borderRadius: 14, background: stat.bg, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                  <Icon style={{ width: 22, height: 22, color: stat.color }} />
+                </div>
+                <span style={{ fontSize: 11, fontWeight: 700, color: stat.color, background: stat.bg, padding: '4px 10px', borderRadius: 100, border: `1px solid ${stat.border}` }}>
+                  Live
+                </span>
+              </div>
+              <div>
+                <p style={{ fontSize: 34, fontWeight: 900, color: '#0f172a', margin: '0 0 4px', lineHeight: 1, letterSpacing: '-1px' }}>{stat.value}</p>
+                <p style={{ fontSize: 13, fontWeight: 700, color: '#334155', margin: '0 0 4px' }}>{stat.title}</p>
+                <p style={{ fontSize: 11, color: '#94a3b8', margin: 0, fontWeight: 500 }}>{stat.delta}</p>
+              </div>
+            </div>
+          );
+        })}
       </div>
 
       <div className="home-sections">
@@ -151,146 +180,6 @@ const StudentHome = () => {
           display: flex;
           flex-direction: column;
           gap: 32px;
-        }
-
-        /* ── Welcome Banner ── */
-        .welcome-banner {
-          background: linear-gradient(135deg, #0F172A 0%, #1E1B4B 60%, #312E81 100%);
-          border-radius: 24px;
-          padding: 40px 48px;
-          display: flex;
-          justify-content: space-between;
-          align-items: center;
-          position: relative;
-          overflow: hidden;
-          min-height: 180px;
-        }
-
-        .welcome-text {
-          display: flex;
-          flex-direction: column;
-          gap: 10px;
-          z-index: 1;
-        }
-
-        .welcome-badge {
-          display: inline-flex;
-          align-items: center;
-          gap: 6px;
-          background: rgba(124, 58, 237, 0.3);
-          border: 1px solid rgba(139, 92, 246, 0.4);
-          color: #A78BFA;
-          font-size: 12px;
-          font-weight: 800;
-          text-transform: uppercase;
-          letter-spacing: 1px;
-          padding: 5px 12px;
-          border-radius: 100px;
-          width: fit-content;
-        }
-
-        .badge-icon {
-          width: 14px;
-          height: 14px;
-        }
-
-        .welcome-title {
-          font-size: 30px;
-          font-weight: 900;
-          color: white;
-          margin: 0;
-          line-height: 1.2;
-        }
-
-        .welcome-sub {
-          font-size: 14px;
-          color: #94A3B8;
-          margin: 0;
-          max-width: 420px;
-          line-height: 1.6;
-        }
-
-        .welcome-meta {
-          display: flex;
-          flex-wrap: wrap;
-          gap: 10px;
-          margin-bottom: 2px;
-        }
-
-        .welcome-meta-item {
-          display: inline-flex;
-          align-items: center;
-          gap: 5px;
-          font-size: 12px;
-          font-weight: 600;
-          color: #C4B5FD;
-          background: rgba(139, 92, 246, 0.15);
-          border: 1px solid rgba(139, 92, 246, 0.25);
-          padding: 4px 10px;
-          border-radius: 100px;
-        }
-
-        .welcome-illustration {
-          position: absolute;
-          inset-inline-end: 48px;
-          top: 50%;
-          transform: translateY(-50%);
-          width: 200px;
-          height: 200px;
-          pointer-events: none;
-          z-index: 0;
-          display: flex;
-          align-items: center;
-          justify-content: center;
-        }
-
-        .illo-avatar {
-          position: relative;
-          z-index: 2;
-          width: 88px;
-          height: 88px;
-          border-radius: 50%;
-          background: linear-gradient(135deg, #7c3aed, #4f46e5);
-          color: #fff;
-          font-size: 36px;
-          font-weight: 900;
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          box-shadow: 0 0 0 6px rgba(124,58,237,0.25), 0 16px 40px rgba(0,0,0,0.3);
-        }
-
-        .illo-circle {
-          position: absolute;
-          border-radius: 50%;
-          opacity: 0.18;
-        }
-
-        .c1 {
-          width: 160px; height: 160px;
-          background: radial-gradient(circle, #7C3AED, transparent);
-          top: 0; right: 0;
-        }
-        .c2 {
-          width: 100px; height: 100px;
-          background: radial-gradient(circle, #6366F1, transparent);
-          bottom: 10px; right: 50px;
-        }
-        .c3 {
-          width: 60px; height: 60px;
-          background: radial-gradient(circle, #A78BFA, transparent);
-          top: 20px; right: 120px;
-        }
-
-        /* ── Stats ── */
-        .stats-grid {
-          display: grid;
-          grid-template-columns: repeat(4, 1fr);
-          gap: 16px;
-        }
-
-        @media (max-width: 1024px) {
-          .stats-grid { grid-template-columns: repeat(2, 1fr); }
         }
 
         /* ── Sections ── */
@@ -359,8 +248,6 @@ const StudentHome = () => {
 
         @media (max-width: 768px) {
           .jobs-compact-list { grid-template-columns: 1fr; }
-          .welcome-banner { padding: 28px 24px; }
-          .welcome-title { font-size: 22px; }
         }
 
         /* ── Activity Section ── */

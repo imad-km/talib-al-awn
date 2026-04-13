@@ -18,6 +18,8 @@ import {
   CurrencyDollarIcon,
   CalendarDaysIcon,
   TagIcon,
+  TrashIcon,
+  UserIcon,
 } from '@heroicons/react/24/outline';
 import { CheckCircleIcon as CheckSolid, XCircleIcon as XSolid } from '@heroicons/react/24/solid';
 
@@ -34,9 +36,9 @@ const JOBS_INIT = [
     description: 'Handle inbound customer calls and emails for our support centre. Must be fluent in Arabic and French.',
     requirements: ['Fluent Arabic & French', 'Communication skills', 'Basic computer literacy', 'Available weekends'],
     applicants: [
-      { id: 'a1', name: 'Ahmed Benali', uni: 'USTHB', major: 'Computer Science', match: 95, phone: '+213 555 123 456', email: 'ahmed@usthb.dz', location: 'Algiers', avatar: 'A', color: '#7c3aed', status: 'pending', appliedAgo: '5 min ago' },
-      { id: 'a2', name: 'Sara Keddar', uni: 'University of Algiers', major: 'Business Admin', match: 88, phone: '+213 555 789 012', email: 'sara@univ-alger.dz', location: 'Blida', avatar: 'S', color: '#0891b2', status: 'accepted', appliedAgo: '2h ago' },
-      { id: 'a3', name: 'Farouk Messaoud', uni: 'ESI Algiers', major: 'Management Info', match: 76, phone: '+213 555 345 678', email: 'farouk@esi.dz', location: 'Algiers', avatar: 'F', color: '#059669', status: 'pending', appliedAgo: '1 day ago' },
+      { id: 'a1', slug: 'ahmed-benali', name: 'Ahmed Benali', uni: 'USTHB', major: 'Computer Science', match: 95, phone: '+213 555 123 456', email: 'ahmed@usthb.dz', location: 'Algiers', avatar: 'A', color: '#7c3aed', status: 'pending', appliedAgo: '5 min ago' },
+      { id: 'a2', slug: 'sara-keddar', name: 'Sara Keddar', uni: 'University of Algiers', major: 'Business Admin', match: 88, phone: '+213 555 789 012', email: 'sara@univ-alger.dz', location: 'Blida', avatar: 'S', color: '#0891b2', status: 'accepted', appliedAgo: '2h ago' },
+      { id: 'a3', slug: 'farouk-messaoud', name: 'Farouk Messaoud', uni: 'ESI Algiers', major: 'Management Info', match: 76, phone: '+213 555 345 678', email: 'farouk@esi.dz', location: 'Algiers', avatar: 'F', color: '#059669', status: 'pending', appliedAgo: '1 day ago' },
     ],
   },
   {
@@ -121,6 +123,7 @@ const MatchBar = ({ value }) => {
 
 /* ── View popup (applicant details) ── */
 const ViewPopup = ({ job, onClose }) => {
+  const navigate = useNavigate();
   const [selected, setSelected] = useState(job.applicants[0]);
   return (
     <div style={{ position: 'fixed', inset: 0, zIndex: 1000, background: 'rgba(15,23,42,0.55)', backdropFilter: 'blur(4px)', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 16 }} onClick={onClose}>
@@ -191,13 +194,29 @@ const ViewPopup = ({ job, onClose }) => {
                 ].map(({ icon: Icon, label, value }) => (
                   <div key={label} style={{ display: 'flex', alignItems: 'center', gap: 10, background: '#f8fafc', borderRadius: 12, padding: '12px 14px' }}>
                     <Icon style={{ width: 16, height: 16, color: '#7c3aed', flexShrink: 0 }} />
-                    <div>
+                    <div style={{ flex: 1, minWidth: 0 }}>
                       <p style={{ fontSize: 11, color: '#94a3b8', fontWeight: 600, margin: '0 0 1px', textTransform: 'uppercase', letterSpacing: '0.06em' }}>{label}</p>
-                      <p style={{ fontSize: 13, fontWeight: 700, color: '#0f172a', margin: 0 }}>{value}</p>
+                      <p style={{ fontSize: 13, fontWeight: 700, color: '#0f172a', margin: 0, overflow: 'hidden', textOverflow: 'ellipsis' }}>{value}</p>
                     </div>
                   </div>
                 ))}
               </div>
+
+              {/* Visit Profile Button */}
+              <button
+                onClick={() => { onClose(); navigate(`/employer/profile/${selected.slug}`); }}
+                style={{
+                  display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8,
+                  width: '100%', padding: '12px', borderRadius: 12, border: '1.5px solid #e9d5ff',
+                  background: '#faf5ff', color: '#6d28d9', fontWeight: 800, fontSize: 14,
+                  cursor: 'pointer', fontFamily: 'inherit', transition: 'all 0.2s'
+                }}
+                onMouseEnter={e => { e.currentTarget.style.background = '#f5f3ff'; e.currentTarget.style.borderColor = '#c084fc'; }}
+                onMouseLeave={e => { e.currentTarget.style.background = '#faf5ff'; e.currentTarget.style.borderColor = '#e9d5ff'; }}
+              >
+                <UserIcon style={{ width: 18, height: 18 }} />
+                Visit Full Profile
+              </button>
             </div>
           )}
         </div>
@@ -449,6 +468,27 @@ const PostJobPopup = ({ onClose, onPost }) => {
   );
 };
 
+const ConfirmDeletePopup = ({ job, onClose, onConfirm }) => {
+  if (!job) return null;
+  return (
+    <div style={{ position: 'fixed', inset: 0, zIndex: 1100, background: 'rgba(15,23,42,0.6)', backdropFilter: 'blur(4px)', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 16 }} onClick={onClose}>
+      <div style={{ background: '#fff', borderRadius: 24, width: '100%', maxWidth: 400, padding: 32, textAlign: 'center', boxShadow: '0 25px 50px -12px rgba(0,0,0,0.25)' }} onClick={e => e.stopPropagation()}>
+        <div style={{ width: 64, height: 64, background: '#ffefef', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 20px', color: '#ef4444' }}>
+          <TrashIcon style={{ width: 32, height: 32 }} />
+        </div>
+        <h3 style={{ fontSize: 18, fontWeight: 900, color: '#0f172a', margin: '0 0 10px' }}>Delete Job Post?</h3>
+        <p style={{ fontSize: 14, color: '#64748b', lineHeight: 1.6, margin: '0 0 24px' }}>
+          Are you sure you want to delete <strong>"{job.title}"</strong>? This action cannot be undone and all applicant data will be lost.
+        </p>
+        <div style={{ display: 'flex', gap: 12 }}>
+          <button onClick={onClose} style={{ flex: 1, padding: '12px', borderRadius: 12, border: '1.5px solid #e2e8f0', background: 'white', color: '#64748b', fontWeight: 700, fontSize: 14, cursor: 'pointer', fontFamily: 'inherit' }}>Cancel</button>
+          <button onClick={() => { onConfirm(job.id); onClose(); }} style={{ flex: 1, padding: '12px', borderRadius: 12, border: 'none', background: '#ef4444', color: 'white', fontWeight: 700, fontSize: 14, cursor: 'pointer', fontFamily: 'inherit' }}>Delete</button>
+        </div>
+      </div>
+    </div>
+  );
+};
+
 /* ══════════════════════════════════════════════════════ */
 /*  MAIN PAGE                                             */
 /* ══════════════════════════════════════════════════════ */
@@ -458,6 +498,7 @@ const EmployerJobs = () => {
   const [jobs, setJobs] = useState(JOBS_INIT);
   const [viewJob, setViewJob] = useState(null);
   const [actJob, setActJob] = useState(null);
+  const [delJob, setDelJob] = useState(null);
   const [postOpen, setPostOpen] = useState(false);
   const [filter, setFilter] = useState('all');
 
@@ -470,6 +511,10 @@ const EmployerJobs = () => {
 
   const handlePostJob = (newJob) => {
     setJobs(prev => [{ ...newJob, id: Date.now() }, ...prev]);
+  };
+
+  const handleDeleteJob = (id) => {
+    setJobs(prev => prev.filter(j => j.id !== id));
   };
 
   const filtered = filter === 'all' ? jobs : jobs.filter(j => j.status === filter);
@@ -617,6 +662,16 @@ const EmployerJobs = () => {
                       >
                         <PencilSquareIcon style={{ width: 16, height: 16 }} />
                       </button>
+                      {/* Delete icon */}
+                      <button
+                        onClick={() => setDelJob(job)}
+                        title="Delete job"
+                        style={{ width: 36, height: 36, borderRadius: 10, border: '1.5px solid #e2e8f0', background: '#f8fafc', color: '#64748b', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', transition: 'all 0.15s' }}
+                        onMouseEnter={e => { e.currentTarget.style.borderColor = '#ef4444'; e.currentTarget.style.color = '#ef4444'; e.currentTarget.style.background = '#fef2f2'; }}
+                        onMouseLeave={e => { e.currentTarget.style.borderColor = '#e2e8f0'; e.currentTarget.style.color = '#64748b'; e.currentTarget.style.background = '#f8fafc'; }}
+                      >
+                        <TrashIcon style={{ width: 16, height: 16 }} />
+                      </button>
                     </div>
                   </td>
                 </tr>
@@ -645,6 +700,13 @@ const EmployerJobs = () => {
           job={actJob}
           onClose={() => setActJob(null)}
           onUpdate={handleStatusUpdate}
+        />
+      )}
+      {delJob && (
+        <ConfirmDeletePopup
+          job={delJob}
+          onClose={() => setDelJob(null)}
+          onConfirm={handleDeleteJob}
         />
       )}
       {postOpen && (

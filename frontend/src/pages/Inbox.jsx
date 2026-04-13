@@ -124,7 +124,7 @@ function durationLabel(months, days) {
 /* ═══════════════════════════════════════════════════════════════════════ */
 function DealPopup({ deal, onClose, onAccept, onReject, onSubmit, isOpen, role }) {
   const [form, setForm] = useState({
-    jobTitle: '', dailySalary: '',
+    dailySalary: '',
     durationMonths: '0', durationDays: '0',
     startDate: '', workStart: '08:00', workEnd: '17:00',
     instructions: '',
@@ -147,7 +147,7 @@ function DealPopup({ deal, onClose, onAccept, onReject, onSubmit, isOpen, role }
   const handleSubmit = (e) => {
     e.preventDefault();
     if (!hasDuration) { alert('Please enter at least 1 month or 1 day for the duration.'); return; }
-    onSubmit({ ...form, durationMonths: months, durationDays: days });
+    onSubmit({ ...form, jobTitle: 'New Job Agreement', durationMonths: months, durationDays: days });
   };
 
   const set = (key) => (e) => setForm(p => ({ ...p, [key]: e.target.value }));
@@ -244,11 +244,14 @@ function DealPopup({ deal, onClose, onAccept, onReject, onSubmit, isOpen, role }
             {deal.status === 'idle' && <ClockIcon style={{ width: 16, height: 16 }} />}
             {DEAL_STATUS_LABEL[deal.status]}
           </div>
-          {deal.status === 'idle' && (
+          {deal.status === 'idle' && deal.sender !== role && (
             <div style={{ display: 'flex', gap: 12 }}>
               <button onClick={onReject} style={{ flex: 1, padding: '14px', borderRadius: 14, border: '2px solid #fca5a5', background: '#fff5f5', color: '#ef4444', fontWeight: 700, fontSize: 14, cursor: 'pointer', fontFamily: 'inherit' }}>Reject</button>
               <button onClick={onAccept} style={{ flex: 1, padding: '14px', borderRadius: 14, border: 'none', background: 'linear-gradient(135deg,#22c55e,#16a34a)', color: '#fff', fontWeight: 700, fontSize: 14, cursor: 'pointer', fontFamily: 'inherit' }}>Accept Deal</button>
             </div>
+          )}
+          {deal.status === 'idle' && deal.sender === role && (
+            <p style={{ textAlign: 'center', fontSize: 13, color: '#64748b', fontStyle: 'italic', margin: '0 0 10px' }}>Waiting for response...</p>
           )}
           {deal.status !== 'idle' && (
             <button onClick={onClose} style={{ width: '100%', padding: '14px', borderRadius: 14, border: 'none', background: '#f1f5f9', color: '#475569', fontWeight: 700, fontSize: 14, cursor: 'pointer', fontFamily: 'inherit' }}>Close</button>
@@ -280,11 +283,6 @@ function DealPopup({ deal, onClose, onAccept, onReject, onSubmit, isOpen, role }
         </div>
 
         <form onSubmit={handleSubmit}>
-
-          {/* Job title */}
-          <FormField label="Job Title">
-            <FocusInput type="text" placeholder="e.g. Barista, Delivery Driver…" value={form.jobTitle} onChange={set('jobTitle')} required />
-          </FormField>
 
           {/* Daily salary */}
           <FormField label="Daily Salary (DZD)">
@@ -466,7 +464,8 @@ const Inbox = () => {
   };
 
   const submitDeal = (form) => {
-    const deal = { ...form, status: 'idle' };
+    const role = location.pathname.startsWith('/employer') ? 'employer' : 'student';
+    const deal = { ...form, status: 'idle', sender: role };
     setDeals(p => ({ ...p, [selectedChat]: deal }));
     setDealOpen(false);
     const dur = durationLabel(form.durationMonths, form.durationDays);

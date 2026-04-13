@@ -9,7 +9,8 @@ import {
   Inbox, 
   Bell, 
   Settings, 
-  User
+  User,
+  LogOut,
 } from 'lucide-react';
 import {
   BriefcaseIcon,
@@ -54,18 +55,26 @@ const NOTIF_PREVIEW = [
 ];
 
 const Navbar = ({ role = 'student' }) => {
-  const { t } = useLanguage();
+  const { t, lang } = useLanguage();
   const navigate = useNavigate();
   const [notifOpen, setNotifOpen] = useState(false);
+  const [profileOpen, setProfileOpen] = useState(false);
   const [notifs, setNotifs] = useState(NOTIF_PREVIEW);
   const notifRef = useRef(null);
+  const profileRef = useRef(null);
 
   const unreadCount = notifs.filter(n => !n.read).length;
 
   useEffect(() => {
     const handler = (e) => {
-      if (notifRef.current && !notifRef.current.contains(e.target)) {
+      // Defensive check for e.target and refs
+      if (!e.target || !(e.target instanceof Node)) return;
+
+      if (notifRef.current && notifRef.current.contains && !notifRef.current.contains(e.target)) {
         setNotifOpen(false);
+      }
+      if (profileRef.current && profileRef.current.contains && !profileRef.current.contains(e.target)) {
+        setProfileOpen(false);
       }
     };
     document.addEventListener('mousedown', handler);
@@ -91,14 +100,14 @@ const Navbar = ({ role = 'student' }) => {
   ];
 
   return (
-    <nav className="navbar">
+    <nav className="navbar" dir={lang === 'ar' ? 'rtl' : 'ltr'}>
       <div className="nav-container">
         <div className="nav-right">
           <Link to="/" className="logo">
-            <div className="logo-icon">
-              <div className="logo-inner"></div>
-            </div>
-            <span className="logo-text">Talib <span className="logo-alt">Awn</span></span>
+            <img src="/assets/logo-07.svg" alt="Talib Awn Logo" style={{ width: 44, height: 44 }} />
+            <span className="logo-text">
+              {t('landing.footer.footerTitle1')} <span className="logo-alt">{t('landing.footer.footerTitle2')}</span>
+            </span>
           </Link>
         </div>
 
@@ -130,7 +139,7 @@ const Navbar = ({ role = 'student' }) => {
               >
                 <Bell size={20} />
                 {unreadCount > 0 && (
-                  <span className="notif-badge" style={{ top: 9, right: 9 }}>{unreadCount > 9 ? '9+' : unreadCount}</span>
+                  <span className="notif-badge" style={{ top: -4, right: -4 }}>{unreadCount > 9 ? '9+' : unreadCount}</span>
                 )}
               </button>
 
@@ -150,7 +159,7 @@ const Navbar = ({ role = 'student' }) => {
                   {/* Header */}
                   <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '16px 20px', borderBottom: '1px solid #f1f5f9' }}>
                     <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-                      <span style={{ fontSize: 15, fontWeight: 800, color: '#0f172a' }}>Notifications</span>
+                      <span style={{ fontSize: 15, fontWeight: 800, color: '#0f172a' }}>{t('notifications')}</span>
                       {unreadCount > 0 && (
                         <span style={{ background: '#7c3aed', color: '#fff', borderRadius: 100, padding: '2px 8px', fontSize: 11, fontWeight: 800 }}>{unreadCount}</span>
                       )}
@@ -160,7 +169,7 @@ const Navbar = ({ role = 'student' }) => {
                         onClick={() => setNotifs(n => n.map(x => ({ ...x, read: true })))}
                         style={{ fontSize: 12, fontWeight: 700, color: '#7c3aed', background: 'none', border: 'none', cursor: 'pointer', fontFamily: 'inherit' }}
                       >
-                        Mark all read
+                        {t('markAllRead')}
                       </button>
                     )}
                   </div>
@@ -212,7 +221,7 @@ const Navbar = ({ role = 'student' }) => {
                         fontFamily: 'inherit',
                       }}
                     >
-                      View All Notifications
+                      {t('viewAllNotifs')}
                     </button>
                   </div>
                 </div>
@@ -225,8 +234,60 @@ const Navbar = ({ role = 'student' }) => {
             </button>
 
             {/* Profile picture */}
-            <div className="user-profile" onClick={() => navigate(role === 'student' ? '/student/my-profile' : `${base}/my-profile`)}>
-              <User size={20} />
+            <div ref={profileRef} style={{ position: 'relative' }}>
+              <div 
+                className="user-profile" 
+                onClick={() => setProfileOpen(p => !p)}
+                style={{ borderColor: profileOpen ? '#7c3aed' : 'white', boxShadow: profileOpen ? '0 0 0 2px #7c3aed' : '0 0 0 1.5px var(--border)' }}
+              >
+                <User size={20} />
+              </div>
+
+              {profileOpen && (
+                <div style={{
+                  position: 'absolute',
+                  top: 'calc(100% + 12px)',
+                  right: 0,
+                  width: 200,
+                  background: '#fff',
+                  borderRadius: 18,
+                  border: '1px solid #e2e8f0',
+                  boxShadow: '0 16px 48px rgba(0,0,0,0.12)',
+                  zIndex: 2000,
+                  overflow: 'hidden',
+                  padding: '8px',
+                }}>
+                  <button
+                    onClick={() => { setProfileOpen(false); navigate(role === 'student' ? '/student/my-profile' : `${base}/my-profile`); }}
+                    style={{
+                      width: '100%', display: 'flex', alignItems: 'center', gap: 10, padding: '12px 14px',
+                      borderRadius: 12, border: 'none', background: 'none', color: '#475569',
+                      fontSize: 14, fontWeight: 700, cursor: 'pointer', fontFamily: 'inherit',
+                      transition: 'all 0.15s', textAlign: 'start'
+                    }}
+                    onMouseEnter={e => { e.currentTarget.style.background = '#f8fafc'; e.currentTarget.style.color = '#7c3aed'; }}
+                    onMouseLeave={e => { e.currentTarget.style.background = 'none'; e.currentTarget.style.color = '#475569'; }}
+                  >
+                    <User size={18} />
+                    {t('profile')}
+                  </button>
+                  <div style={{ height: 1, background: '#f1f5f9', margin: '4px 0' }} />
+                  <button
+                    onClick={() => { /* Handle logout logic */ setProfileOpen(false); navigate('/login'); }}
+                    style={{
+                      width: '100%', display: 'flex', alignItems: 'center', gap: 10, padding: '12px 14px',
+                      borderRadius: 12, border: 'none', background: 'none', color: '#ef4444',
+                      fontSize: 14, fontWeight: 700, cursor: 'pointer', fontFamily: 'inherit',
+                      transition: 'all 0.15s', textAlign: 'start'
+                    }}
+                    onMouseEnter={e => { e.currentTarget.style.background = '#fff5f5'; }}
+                    onMouseLeave={e => { e.currentTarget.style.background = 'none'; }}
+                  >
+                    <LogOut size={18} />
+                    {t('logout')}
+                  </button>
+                </div>
+              )}
             </div>
 
           </div>
@@ -262,33 +323,16 @@ const Navbar = ({ role = 'student' }) => {
           cursor: pointer;
           text-decoration: none;
         }
-        .logo-icon {
-          width: 32px;
-          height: 32px;
-          background: #7C3AED;
-          border-radius: 8px;
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          position: relative;
-        }
-        .logo-inner {
-          width: 14px;
-          height: 14px;
-          border: 2px solid white;
-          transform: rotate(45deg);
-        }
+
         .logo-text {
-          font-size: 22px;
+          font-family: 'Cairo', sans-serif;
+          font-size: 18px;
           font-weight: 800;
-          color: #1E293B;
-          letter-spacing: -0.5px;
+          letter-spacing: -0.03em;
+          color: #0F172A;
         }
         .logo-alt {
           color: var(--primary);
-          padding: 2px 8px;
-          border-radius: 6px;
-          font-size: 18px;
         }
         .nav-links {
           display: flex;

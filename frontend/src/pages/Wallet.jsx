@@ -59,79 +59,25 @@ const BalanceCard = ({ isEmployer, onWithdraw, onTopUp }) => {
 
   return (
     <div className={`bc-root ${isEmp ? 'bc-employer' : 'bc-student'}`}>
-
-      {/* background layers */}
       <div className="bc-blob bc-blob-1" />
       <div className="bc-blob bc-blob-2" />
       <div className="bc-grid-overlay" />
 
-      <div className="bc-inner">
-
-        {/* ── top bar ── */}
-        <div className="bc-topbar">
-          <div className="bc-account-badge">
-            <div className="bc-badge-dot" />
-            <span>{isEmp ? 'Employer Account' : 'Student Account'}</span>
-          </div>
-          <div className="bc-chip">
-            <Layers size={14} />
-            <span>طالب عون</span>
-          </div>
-        </div>
-
-        {/* ── balance ── */}
+      <div className="bc-inner" style={{ alignItems: 'center', textAlign: 'center', gap: 32 }}>
         <div className="bc-balance-block">
-          <span className="bc-balance-label">Available Balance</span>
-          <div className="bc-balance-row">
-            <span className="bc-currency">Da</span>
-            <span className="bc-amount">12,500</span>
+          <span className="bc-balance-label" style={{ marginBottom: 8 }}>{t('availableBalance') || 'Available Balance'}</span>
+          <div className="bc-balance-row" style={{ justifyContent: 'center' }}>
+            <span className="bc-currency" style={{ fontSize: 24 }}>Da</span>
+            <span className="bc-amount" style={{ fontSize: 64 }}>12,500</span>
           </div>
         </div>
 
-        {/* ── divider ── */}
-        <div className="bc-divider" />
-
-        {/* ── mini stats ── */}
-        <div className="bc-stats">
-          <div className="bc-stat">
-            <TrendingUp size={14} className="bc-stat-icon up" />
-            <div>
-              <span className="bc-stat-val">Da {totalEarned.toLocaleString()}</span>
-              <span className="bc-stat-lbl">{isEmp ? 'Total Paid Out' : 'Total Earned'}</span>
-            </div>
-          </div>
-          <div className="bc-stat-sep" />
-          <div className="bc-stat">
-            <TrendingDown size={14} className="bc-stat-icon down" />
-            <div>
-              <span className="bc-stat-val">Da {totalWithdrawn.toLocaleString()}</span>
-              <span className="bc-stat-lbl">{isEmp ? 'Escrow Released' : 'Withdrawn'}</span>
-            </div>
-          </div>
-          <div className="bc-stat-sep" />
-          <div className="bc-stat">
-            <CreditCard size={14} className="bc-stat-icon neutral" />
-            <div>
-              <span className="bc-stat-val">{ALL_TRANSACTIONS.length}</span>
-              <span className="bc-stat-lbl">Transactions</span>
-            </div>
-          </div>
-        </div>
-
-        {/* ── actions ── */}
-        <div className="bc-actions">
-          <button className="bc-btn-primary" onClick={onWithdraw}>
+        <div className="bc-actions" style={{ width: '100%', maxWidth: 300 }}>
+          <button className="bc-btn-primary" onClick={onWithdraw} style={{ width: '100%' }}>
             <SendHorizonal size={16} />
-            <span>Withdraw Funds</span>
+            <span>{t('withdrawFunds') || 'Withdraw Funds'}</span>
           </button>
-          {isEmp && (
-            <button className="bc-btn-secondary" onClick={onTopUp}>
-              <CreditCard size={16} />
-              <span>Top Up via Chargily</span>
-            </button>
-          )}
         </div>
-
       </div>
     </div>
   );
@@ -240,7 +186,12 @@ const Wallet = ({ isEmployer }) => {
         />
 
         {/* ── PAYOUT METHODS ── */}
-        <div className="card bank-details-card">
+        <div className="card bank-details-card" style={{ position: 'relative', overflow: 'hidden' }}>
+          <div style={{ position: 'absolute', inset: 0, background: 'rgba(15, 23, 42, 0.85)', backdropFilter: 'blur(4px)', zIndex: 10, display: 'flex', alignItems: 'center', justifyContent: 'center', flexDirection: 'column', gap: 12, color: 'white' }}>
+            <CreditCard size={32} style={{ opacity: 0.5 }} />
+            <span style={{ fontSize: 18, fontWeight: 900, letterSpacing: '0.5px' }}>Not Available For Now</span>
+            <span style={{ fontSize: 13, opacity: 0.7, fontWeight: 600 }}>Payment system is Chargily Gateway by default</span>
+          </div>
           <h3 className="card-title">{t('savedPayoutMethods')}</h3>
           <div className="bank-list">
             <div className="bank-item active">

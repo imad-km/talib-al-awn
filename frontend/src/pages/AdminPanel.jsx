@@ -137,21 +137,6 @@ const PageOverview = ({ users, jobs, warnings, verify }) => {
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: 32 }}>
-      {/* welcome banner */}
-      <div style={{ background: 'linear-gradient(135deg,#0f172a 0%,#1e1b4b 100%)', padding: '32px 36px', borderRadius: 24, color: '#fff', position: 'relative', overflow: 'hidden' }}>
-        <div style={{ position: 'absolute', top: -30, right: -30, width: 180, height: 180, borderRadius: '50%', background: 'rgba(124,58,237,0.15)' }} />
-        <div style={{ position: 'absolute', bottom: -50, left: 120, width: 120, height: 120, borderRadius: '50%', background: 'rgba(79,70,229,0.12)' }} />
-        <h2 style={{ fontSize: 26, fontWeight: 900, margin: '0 0 8px', letterSpacing: '-0.5px' }}>Welcome back, Admin 👋</h2>
-        <p style={{ color: 'rgba(255,255,255,0.6)', margin: '0 0 20px', fontSize: 14 }}>
-          {pendingJobs} job{pendingJobs !== 1 ? 's' : ''} awaiting review · {pendingVer} verification{pendingVer !== 1 ? 's' : ''} pending · {warnings.length} warning{warnings.length !== 1 ? 's' : ''} active
-        </p>
-        <div style={{ display: 'flex', gap: 10 }}>
-          {[{ label: `${pendingJobs} Pending Jobs`, color: '#f59e0b' }, { label: `${pendingVer} Verifications`, color: '#22c55e' }].map(b => (
-            <span key={b.label} style={{ fontSize: 12, fontWeight: 700, background: `${b.color}22`, color: b.color, border: `1px solid ${b.color}44`, padding: '5px 14px', borderRadius: 100 }}>{b.label}</span>
-          ))}
-        </div>
-      </div>
-
       {/* stat cards */}
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3,1fr)', gap: 16 }}>
         {stats.map(s => {
@@ -819,7 +804,7 @@ const AdminPanel = () => {
         {/* logo */}
         <div style={{ padding: '24px 20px', borderBottom: '1px solid rgba(255,255,255,0.06)' }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-            <div style={{ width: 38, height: 38, borderRadius: 12, background: 'linear-gradient(135deg,#7c3aed,#4f46e5)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 18, fontWeight: 900 }}>ط</div>
+            <img src="/assets/logo-07.svg" alt="Logo" style={{ width: 38, height: 38, borderRadius: 10, objectFit: 'contain' }} />
             <div>
               <p style={{ fontSize: 17, fontWeight: 900, color: '#f0ead8', margin: 0 }}>طالب<span style={{ color: '#a78bfa' }}> عون</span></p>
               <span style={{ fontSize: 10, fontWeight: 700, background: 'rgba(245,158,11,0.2)', color: '#fcd34d', padding: '2px 8px', borderRadius: 100 }}>ADMIN</span>

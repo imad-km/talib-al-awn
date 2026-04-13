@@ -52,6 +52,7 @@ const LandingPage = () => {
         body.style.setProperty('--carousel-count', String(count));
 
         const render = () => { 
+          body.style.setProperty('--carousel-dir', lang === 'ar' ? '1' : '-1');
           body.style.setProperty('--carousel-index', String(idx)); 
           body.classList.remove('opacity-0'); 
         };
@@ -191,62 +192,6 @@ const LandingPage = () => {
       cleanups.push(() => cancelAnimationFrame(rafId));
     }
 
-    const container = root.querySelector('#heroParticles');
-    const hero = root.querySelector('#hero');
-    if (container && hero) {
-      const animAmbient = (p) => {
-        const sx = Math.random() * 100, sy = Math.random() * 100;
-        const dur = Math.random() * 12 + 10, delay = Math.random() * 8;
-        p.style.transition = 'none';
-        p.style.left = sx + '%'; p.style.top = sy + '%'; p.style.opacity = '0';
-        setTimeout(() => {
-          p.style.transition = 'all ' + dur + 's linear';
-          p.style.opacity = (Math.random() * 0.25 + 0.05).toFixed(3);
-          p.style.left = (sx + (Math.random() * 16 - 8)) + '%';
-          p.style.top = (sy - Math.random() * 26) + '%';
-          setTimeout(() => animAmbient(p), dur * 1000);
-        }, delay * 1000);
-      };
-
-      for (let i = 0; i < 72; i++) {
-        const p = document.createElement('div'); 
-        p.className = 'hero-particle';
-        const sz = Math.random() * 2.4 + 0.8; 
-        p.style.width = sz + 'px'; 
-        p.style.height = sz + 'px';
-        container.appendChild(p); 
-        animAmbient(p);
-      }
-
-      const onMouseMove = (e) => {
-        const rect = hero.getBoundingClientRect();
-        const mx = (e.clientX - rect.left) / rect.width * 100;
-        const my = (e.clientY - rect.top) / rect.height * 100;
-        const p = document.createElement('div'); 
-        p.className = 'hero-particle';
-        const sz = Math.random() * 3 + 1.5; 
-        p.style.width = sz + 'px'; 
-        p.style.height = sz + 'px';
-        p.style.left = mx + '%'; 
-        p.style.top = my + '%'; 
-        p.style.opacity = '.5';
-        container.appendChild(p);
-        setTimeout(() => { 
-          p.style.transition = 'all 1.8s ease-out'; 
-          p.style.left = (mx + (Math.random() * 10 - 5)) + '%'; 
-          p.style.top = (my + (Math.random() * 10 - 5)) + '%'; 
-          p.style.opacity = '0'; 
-          setTimeout(() => p.remove(), 1800); 
-        }, 10);
-        const dx = (e.clientX / window.innerWidth - 0.5) * 5;
-        const dy = (e.clientY / window.innerHeight - 0.5) * 5;
-        root.querySelectorAll('.hero-sphere').forEach(s => { 
-          s.style.transform = `translate(${dx}px, ${dy}px)`; 
-        });
-      };
-      hero.addEventListener('mousemove', onMouseMove);
-      cleanups.push(() => hero.removeEventListener('mousemove', onMouseMove));
-    }
 
     return () => cleanups.forEach(fn => fn());
   }, [lang]);
@@ -255,12 +200,12 @@ const LandingPage = () => {
     <div className="landing-root" dir={lang === 'ar' ? 'rtl' : 'ltr'} ref={rootRef}>
       <nav id="nb">
         <div className="nav-brand">
-          <span className="nav-sep"></span>
+          <img src="/assets/logo-07.svg" className="nav-logo-box" alt="Talib-Awn" />
           <span className="nav-name">
             {t('landing.footer.footerTitle1')}
             <span> {t('landing.footer.footerTitle2')}</span>
           </span>
-          <img src="/assets/logo-07.svg" className="nav-logo-box" alt="Talib-Awn" />
+          <span className="nav-sep"></span>
         </div>
         <div className="nav-links">
           <a href="#offer">{t('landing.nav.features')}</a>
@@ -283,9 +228,7 @@ const LandingPage = () => {
           <div className="hero-glow"></div>
           <div className="hero-grid"></div>
           <div className="hero-noise"></div>
-          <div className="hero-particles" id="heroParticles"></div>
         </div>
-        <div className="hero-pill">{t('landing.hero.pill')}</div>
         <h1>{t('landing.hero.title1')}<br /><em>{t('landing.hero.title2')}</em></h1>
         <p className="hero-sub">{t('landing.hero.sub')}</p>
         <div className="hero-cta">
@@ -304,10 +247,10 @@ const LandingPage = () => {
           <div id="auto-play" data-carousel='{"isAutoPlay":true,"speed":4000}'>
             <div className="carousel">
               <div className="carousel-body opacity-0">
-                <div className="carousel-slide"><div><img src="/assets/img_1.png" alt="Feature 1" /></div></div>
-                <div className="carousel-slide"><div><img src="/assets/img_2.png" alt="Feature 2" /></div></div>
-                <div className="carousel-slide"><div><img src="/assets/img_3.png" alt="Feature 3" /></div></div>
-                <div className="carousel-slide"><div><img src="/assets/img_4.png" alt="Feature 4" /></div></div>
+                <div className="carousel-slide"><div><img src="/assets/img_1.webp" alt="Feature 1" /></div></div>
+                <div className="carousel-slide"><div><img src="/assets/img_2.webp" alt="Feature 2" /></div></div>
+                <div className="carousel-slide"><div><img src="/assets/img_3.webp" alt="Feature 3" /></div></div>
+                <div className="carousel-slide"><div><img src="/assets/img_4.webp" alt="Feature 4" /></div></div>
               </div>
             </div>
             <button type="button" className="carousel-prev">
@@ -554,12 +497,12 @@ const LandingPage = () => {
           <div className="fg">
             <div className="fb">
               <div className="nav-brand">
-                <span className="nav-sep"></span>
+                <img src="/assets/logo-07.svg" className="nav-logo-box" alt="Talib-Awn" style={{ background: 'transparent', boxShadow: 'none' }} />
                 <span className="nav-name">
                   {t('landing.footer.footerTitle1')}
                   <span> {t('landing.footer.footerTitle2')}</span>
                 </span>
-                <img src="/assets/logo-07.svg" className="nav-logo-box" alt="Talib-Awn" style={{ background: 'transparent', boxShadow: 'none' }} />
+                <span className="nav-sep"></span>
               </div>
               <p>{t('landing.footer.about')}</p>
               <div className="fsoc">

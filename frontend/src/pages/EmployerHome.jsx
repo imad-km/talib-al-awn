@@ -98,7 +98,7 @@ const EmployerHome = () => {
           </div>
           <div>
             <p style={{ fontSize: 13, fontWeight: 600, color: '#94a3b8', margin: '0 0 2px', letterSpacing: '0.06em', textTransform: 'uppercase' }}>Welcome back</p>
-            <h1 style={{ fontSize: 32, fontWeight: 900, color: '#0f172a', margin: '0 0 4px', letterSpacing: '-0.5px' }}>👋 {employer.name}</h1>
+            <h1 style={{ fontSize: 32, fontWeight: 900, color: '#0f172a', margin: '0 0 4px', letterSpacing: '-0.5px' }}>{employer.name}</h1>
             {/* Company + location pills */}
             <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8, marginBottom: 2 }}>
               {employer.company && (

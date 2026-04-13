@@ -12,6 +12,7 @@ import {
   BriefcaseIcon,
   UserIcon,
   MagnifyingGlassIcon,
+  EyeIcon,
 } from '@heroicons/react/24/outline';
 import { CheckCircleIcon as CheckSolid, XCircleIcon as XSolid } from '@heroicons/react/24/solid';
 
@@ -106,6 +107,24 @@ const ActionModal = ({ applicant, onClose, onAction }) => {
           <div style={{ marginBottom: 24 }}>
             <p style={{ fontSize: 12, fontWeight: 700, color: '#94a3b8', textTransform: 'uppercase', letterSpacing: '0.07em', margin: '0 0 8px' }}>Match Score</p>
             <MatchBar value={applicant.match} />
+          </div>
+
+          {/* Visit Profile Link */}
+          <div style={{ padding: '0 0 24px', textAlign: 'center' }}>
+            <button
+              onClick={() => { onClose(); navigate(`/employer/profile/${applicant.slug}`); }}
+              style={{
+                display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8,
+                width: '100%', padding: '12px', borderRadius: 12, border: '1.5px solid #e9d5ff',
+                background: '#faf5ff', color: '#6d28d9', fontWeight: 800, fontSize: 14,
+                cursor: 'pointer', fontFamily: 'inherit', transition: 'all 0.2s'
+              }}
+              onMouseEnter={e => { e.currentTarget.style.background = '#f5f3ff'; e.currentTarget.style.borderColor = '#c084fc'; }}
+              onMouseLeave={e => { e.currentTarget.style.background = '#faf5ff'; e.currentTarget.style.borderColor = '#e9d5ff'; }}
+            >
+              <UserIcon style={{ width: 18, height: 18 }} />
+              Visit Full Profile
+            </button>
           </div>
         </div>
 

@@ -39,18 +39,53 @@ const JOB_DATA = [
 
 const FindJobs = () => {
   const { t, lang } = useLanguage();
-  const [search, setSearch] = useState('');
+  const [filters, setFilters] = useState(null);
 
-  const SAMPLE_JOBS = JOB_DATA.map(j => ({ ...j[lang], salary: j.salary, workTime: j.workTime, experience: j.experience }));
+  const SAMPLE_JOBS = JOB_DATA.map(j => ({ 
+    ...j[lang], 
+    salary: j.salary, 
+    workTime: j.workTime, 
+    experience: j.experience,
+    rawSalary: parseInt(j.salary.replace(/[^0-9]/g, '')),
+    category: j.category || 'Retail & Sales' // fallback for demo
+  }));
 
-  const q = search.toLowerCase();
-  const filtered = SAMPLE_JOBS.filter(j =>
-    !q ||
-    j.name.toLowerCase().includes(q) ||
-    j.location.toLowerCase().includes(q) ||
-    j.description.toLowerCase().includes(q) ||
-    (j.employer || '').toLowerCase().includes(q)
-  );
+  const filtered = SAMPLE_JOBS.filter(j => {
+    if (!filters) return true;
+    
+    // Category filter
+    if (filters.selectedCategory && j.category !== filters.selectedCategory) return false;
+
+    // Job Type filter
+    if (filters.jobType) {
+      const { partTime, fullTime } = filters.jobType;
+      // If none selected, show all. If some selected, match at least one.
+      if (partTime || fullTime) {
+        const isPart = j.workTime.includes('يوم') || j.workTime.includes('days'); // simplistic check
+        if (partTime && !isPart && !fullTime) return false;
+        if (fullTime && isPart && !partTime) return false;
+      }
+    }
+
+    // Exp Level filter
+    if (filters.expLevel) {
+      const activeExp = Object.keys(filters.expLevel).filter(k => filters.expLevel[k]);
+      if (activeExp.length > 0) {
+        const itemExp = j.experience.toLowerCase();
+        if (!activeExp.some(k => itemExp.includes(k))) return false;
+      }
+    }
+
+    // Salary filter
+    if (filters.salaryFrom && j.rawSalary < filters.salaryFrom) return false;
+    if (filters.salaryTo && j.rawSalary > filters.salaryTo) return false;
+
+    // Location filter
+    if (filters.commune && !j.location.toLowerCase().includes(filters.commune.toLowerCase())) return false;
+    // (Wilaya check could be more robust but location string in sample is just city name)
+
+    return true;
+  });
 
   return (
     <div className="find-jobs-page">
@@ -71,31 +106,20 @@ const FindJobs = () => {
         </div>
       </div>
 
-      <div className="search-row">
-        <div className="search-capsule">
-          <MagnifyingGlassIcon className="search-icon-dim" />
-          <input
-            type="text"
-            placeholder={t('searchPlaceholder')}
-            className="search-input-field"
-            value={search}
-            onChange={e => setSearch(e.target.value)}
-          />
-          <button className="search-btn-purple">{t('searchBtn')}</button>
-        </div>
-      </div>
-
-      <div className="dashboard-grid">
+      <div className="dashboard-grid" style={{ marginTop: 20 }}>
         <div className="sidebar-col">
-          <FilterSidebar />
+          <FilterSidebar onApply={setFilters} onReset={() => setFilters(null)} />
         </div>
         <div className="main-col">
           <div className="results-bar">
             <span className="results-count">{filtered.length} {t('jobsFoundLabel')}</span>
-            <button className="sort-btn">
-              <AdjustmentsHorizontalIcon className="sort-icon" />
-              {t('sortBtn')}
-            </button>
+            <div style={{ position: 'relative' }}>
+              <button className="sort-btn" style={{ opacity: 0.7, cursor: 'not-allowed' }}>
+                <AdjustmentsHorizontalIcon className="sort-icon" />
+                {t('sortBtn')}
+              </button>
+              <span style={{ position: 'absolute', top: -10, right: -10, background: '#7c3aed', color: '#fff', fontSize: 10, fontWeight: 800, padding: '2px 6px', borderRadius: 100, boxShadow: '0 4px 10px rgba(124,58,237,0.3)' }}>Soon</span>
+            </div>
           </div>
           <div className="jobs-list">
             {filtered.length > 0 ? (

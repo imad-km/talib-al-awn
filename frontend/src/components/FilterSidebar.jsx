@@ -78,7 +78,7 @@ const CATEGORIES = [
   'Security',
 ];
 
-const FilterSidebar = () => {
+const FilterSidebar = ({ onApply, onReset }) => {
   const { t } = useLanguage();
 
   const [selectedCategory, setSelectedCategory] = useState('');
@@ -92,15 +92,30 @@ const FilterSidebar = () => {
 
   const selectedWilaya = WILAYAS.find(w => w.code === wilaya);
 
+  const handleApply = () => {
+    if (onApply) {
+      onApply({
+        selectedCategory,
+        jobType,
+        expLevel,
+        salaryFrom: salaryFrom ? Number(salaryFrom) : null,
+        salaryTo: salaryTo ? Number(salaryTo) : null,
+        wilaya,
+        commune
+      });
+    }
+  };
+
   const handleReset = () => {
     setSelectedCategory('');
-    setJobType({ partTime: true, fullTime: false });
-    setExpLevel({ zero: false, beginner: true, medium: false, expert: false });
+    setJobType({ partTime: false, fullTime: false });
+    setExpLevel({ zero: false, beginner: false, medium: false, expert: false });
     setSalaryFrom('');
     setSalaryTo('');
     setWilaya('');
     setCommune('');
     setCatOpen(false);
+    if (onReset) onReset();
   };
 
   return (
@@ -266,7 +281,7 @@ const FilterSidebar = () => {
 
       {/* ── Footer ── */}
       <div className="filter-footer">
-        <button className="apply-btn">{t('apply')}</button>
+        <button className="apply-btn" onClick={handleApply}>{t('apply')}</button>
         <button className="reset-footer-btn" onClick={handleReset}>{t('reset')}</button>
       </div>
 

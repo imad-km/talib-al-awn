@@ -133,7 +133,7 @@ const Applications = () => {
   return (
     <div className="applications-page">
       <header className="page-header">
-        <h1 className="page-title">{t('applications')}</h1>
+        <h1 className="page-title">{t('myApplications')}</h1>
         <p className="page-subtitle">{t('appsSubtitle')}</p>
       </header>
 
@@ -204,8 +204,13 @@ const Applications = () => {
       {selectedApp && (
         <div className="modal-overlay" onClick={() => setSelectedApp(null)}>
           <div className="modal-content" onClick={e => e.stopPropagation()}>
-            <div className="modal-header">
+            <div className="modal-header" style={{ position: 'relative' }}>
               <h2 className="modal-title">{t('jobDetails')}</h2>
+              <div style={{ position: 'absolute', top: 22, right: 60, display: 'flex', gap: 8, alignItems: 'center' }}>
+                <div className={`status-pill ${getStatusDisplay(selectedApp.status).color}`} style={{ fontSize: 10, padding: '3px 10px' }}>
+                  {getStatusDisplay(selectedApp.status).text}
+                </div>
+              </div>
               <button className="close-btn" onClick={() => setSelectedApp(null)}>
                 <XMarkIcon className="w-6 h-6" />
               </button>
@@ -279,10 +284,7 @@ const Applications = () => {
               </div>
             </div>
 
-            <div className="modal-footer">
-              <div className={`status-pill large ${getStatusDisplay(selectedApp.status).color}`}>
-                {getStatusDisplay(selectedApp.status).text}
-              </div>
+            <div className="modal-footer" style={{ justifyContent: 'flex-end' }}>
               {selectedApp.status === 'accepted' && (
                 <button className="chat-btn" onClick={() => { setSelectedApp(null); navigate(`/student/inbox?newChat=${encodeURIComponent(selectedApp.company)}`); }}>
                   <ChatBubbleLeftEllipsisIcon className="w-5 h-5 rtl-flip" />

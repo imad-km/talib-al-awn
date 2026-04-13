@@ -3,35 +3,72 @@
   bottom: 24px;
   left: 24px;
   z-index: 9999;
+  padding: 2px;
+  background: linear-gradient(135deg, rgba(124, 58, 237, 0.6), rgba(79, 70, 229, 0.4));
+  border: none;
+  border-radius: 100px;
+  cursor: pointer;
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2), 0 0 0 1px rgba(255, 255, 255, 0.2);
+  transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  font-family: 'Cairo', sans-serif;
+}
+
+.button-content {
   display: flex;
   align-items: center;
-  gap: 8px;
-  padding: 12px 18px;
-  background: linear-gradient(135deg, #5B21B6, #7C3AED);
+  gap: 12px;
+  padding: 10px 22px;
+  background: rgba(15, 23, 42, 0.7); /* Darker, more opaque background */
+  backdrop-filter: blur(16px) saturate(180%);
+  -webkit-backdrop-filter: blur(16px) saturate(180%);
+  border-radius: 100px;
+  border: 1px solid rgba(255, 255, 255, 0.15);
   color: #fff;
-  border: none;
-  border-radius: 50px;
-  cursor: pointer;
-  font-family: 'Cairo', sans-serif;
-  font-size: 14px;
-  font-weight: 700;
-  box-shadow: 0 4px 20px rgba(124, 58, 237, 0.4);
   transition: all 0.3s ease;
 }
 
-.floating-lang-btn:hover {
-  transform: translateY(-3px);
-  box-shadow: 0 8px 30px rgba(124, 58, 237, 0.5);
-}
-
-.floating-lang-btn:active {
-  transform: translateY(0);
-}
-
-.lang-icon {
-  font-size: 18px;
+.icon-wrapper {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  background: rgba(124, 58, 237, 0.3);
+  border-radius: 50%;
+  color: #c084fc; /* Brighter purple */
+  box-shadow: inset 0 0 10px rgba(124, 58, 237, 0.2);
+  transition: transform 0.3s ease;
 }
 
 .lang-text {
-  letter-spacing: 0.5px;
+  font-size: 14px;
+  font-weight: 800;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: #fff; /* Solid white for maximum clarity */
+}
+
+.floating-lang-btn:hover {
+  transform: translateY(-5px) scale(1.05);
+  box-shadow: 0 20px 50px rgba(124, 58, 237, 0.4), 0 0 0 1px rgba(255, 255, 255, 0.3);
+}
+
+.floating-lang-btn:hover .button-content {
+  background: rgba(15, 23, 42, 0.85);
+  border-color: rgba(255, 255, 255, 0.3);
+}
+
+.floating-lang-btn:hover .icon-wrapper {
+  transform: rotate(180deg);
+  background: #7c3aed;
+  color: #fff;
+}
+
+.floating-lang-btn:active {
+  transform: translateY(-2px) scale(0.98);
+}
+
+/* Specific adjustment for landing root to ensure it pops against the dark hero */
+.landing-root .floating-lang-btn {
+  background: linear-gradient(135deg, rgba(124, 58, 237, 0.8), rgba(79, 70, 229, 0.6));
 }
