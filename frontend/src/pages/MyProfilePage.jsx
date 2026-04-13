@@ -1,13 +1,14 @@
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import {
   PencilSquareIcon, CheckIcon, XMarkIcon, ArrowUpTrayIcon,
-  DocumentTextIcon, LinkIcon, TrashIcon, StarIcon,
-  MapPinIcon, AcademicCapIcon, EnvelopeIcon, PhoneIcon,
-  BriefcaseIcon, EyeIcon,
+  DocumentTextIcon, LinkIcon, TrashIcon,
+  MapPinIcon, AcademicCapIcon, EnvelopeIcon,
+  BriefcaseIcon, EyeIcon, ArrowDownTrayIcon,
 } from '@heroicons/react/24/outline';
 import { StarIcon as StarSolid } from '@heroicons/react/24/solid';
 import { useLanguage } from '../context/LanguageContext';
+import html2pdf from 'html2pdf.js';
 
 const STORAGE_KEY = 'ta_my_profile';
 
@@ -23,6 +24,7 @@ const DEFAULT_PROFILE = {
   memberSince: 'Jan 2024',
   cvUrl: '',
   cvName: '',
+  cvHtml: '',        // ← New: stores raw HTML from Groq
 };
 
 const MOCK_STATS = [
@@ -44,6 +46,7 @@ function loadProfile() {
     return saved ? { ...DEFAULT_PROFILE, ...JSON.parse(saved) } : { ...DEFAULT_PROFILE };
   } catch { return { ...DEFAULT_PROFILE }; }
 }
+
 function saveProfile(p) {
   try { localStorage.setItem(STORAGE_KEY, JSON.stringify(p)); } catch {}
 }
@@ -69,9 +72,18 @@ const MyProfilePage = () => {
   const [draft, setDraft] = useState({ ...profile });
   const [newSkill, setNewSkill] = useState('');
   const [saved, setSaved] = useState(false);
-  const [cvTab, setCvTab] = useState('link'); // 'link' | 'upload'
+  const [cvTab, setCvTab] = useState('link');
   const [cvLink, setCvLink] = useState(profile.cvUrl || '');
   const [cvSaved, setCvSaved] = useState(false);
+  const [showPreview, setShowPreview] = useState(false);
+
+  // Refresh profile when localStorage changes (after AI CV generation)
+  useEffect(() => {
+    const loaded = loadProfile();
+    setProfile(loaded);
+    setDraft(loaded);
+    setCvLink(loaded.cvUrl || '');
+  }, []);
 
   const startEdit = () => { setDraft({ ...profile }); setEditing(true); };
   const cancelEdit = () => setEditing(false);
@@ -94,16 +106,26 @@ const MyProfilePage = () => {
 
   const removeSkill = (sk) => setDraft(p => ({ ...p, skills: p.skills.filter(x => x !== sk) }));
 
-  const saveCV = () => {
-    const updated = { ...profile, cvUrl: cvLink, cvName: cvLink ? (cvLink.split('/').pop() || 'CV') : '' };
-    setProfile(updated);
-    saveProfile(updated);
-    setCvSaved(true);
-    setTimeout(() => setCvSaved(false), 2000);
+  // Download AI-generated CV as PDF
+  const downloadCVasPDF = () => {
+    if (!profile.cvHtml) return;
+
+    const element = document.createElement('div');
+    element.innerHTML = profile.cvHtml;
+
+    const opt = {
+      margin: [10, 10, 10, 10],
+      filename: `${profile.name.replace(/\s/g, '_')}_CV.pdf`,
+      image: { type: 'jpeg', quality: 0.98 },
+      html2canvas: { scale: 2, useCORS: true },
+      jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
+    };
+
+    html2pdf().set(opt).from(element).save();
   };
 
   const removeCV = () => {
-    const updated = { ...profile, cvUrl: '', cvName: '' };
+    const updated = { ...profile, cvUrl: '', cvName: '', cvHtml: '' };
     setProfile(updated);
     saveProfile(updated);
     setCvLink('');
@@ -113,13 +135,23 @@ const MyProfilePage = () => {
     const file = e.target.files?.[0];
     if (!file) return;
     const url = URL.createObjectURL(file);
-    const updated = { ...profile, cvUrl: url, cvName: file.name };
+    const updated = { ...profile, cvUrl: url, cvName: file.name, cvHtml: '' };
     setProfile(updated);
     saveProfile(updated);
     setCvLink(url);
     setCvSaved(true);
     setTimeout(() => setCvSaved(false), 2000);
   };
+
+  const saveCV = () => {
+    const updated = { ...profile, cvUrl: cvLink, cvName: cvLink ? (cvLink.split('/').pop() || 'CV') : '', cvHtml: '' };
+    setProfile(updated);
+    saveProfile(updated);
+    setCvSaved(true);
+    setTimeout(() => setCvSaved(false), 2000);
+  };
+
+  const isHtmlCV = !!profile.cvHtml;
 
   const inp = (field) => ({
     value: draft[field] || '',
@@ -129,14 +161,12 @@ const MyProfilePage = () => {
 
   return (
     <div style={{ maxWidth: 900, margin: '0 auto' }} dir={isRtl ? 'rtl' : 'ltr'}>
-
       {/* ── HEADER CARD ─────────────────────────────────────────── */}
       <div style={S.headerCard}>
         <div style={S.avatarWrap}>
           <div style={S.avatar}>{profile.name?.[0]?.toUpperCase() || 'A'}</div>
           <div style={S.onlineDot} />
         </div>
-
         <div style={{ flex: 1, minWidth: 0 }}>
           <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', gap: 12, flexWrap: 'wrap' }}>
             <div>
@@ -149,7 +179,6 @@ const MyProfilePage = () => {
                 : <><PencilSquareIcon style={S.btnIcon} />{t('editProfile')}</>}
             </button>
           </div>
-
           <div style={S.metaRow}>
             {profile.university && <span style={S.metaItem}><AcademicCapIcon style={S.metaIcon} />{profile.university}</span>}
             {profile.wilaya && <span style={S.metaItem}><MapPinIcon style={S.metaIcon} />{profile.wilaya}</span>}
@@ -176,7 +205,6 @@ const MyProfilePage = () => {
             <PencilSquareIcon style={{ width: 20, height: 20, color: '#fff' }} />
             <h2 style={S.cardTitle}>{t('editProfile')}</h2>
           </div>
-
           <div style={S.formGrid}>
             <div style={S.field}>
               <label style={S.label}>{t('regFirstName')} {t('regLastName')}</label>
@@ -195,7 +223,6 @@ const MyProfilePage = () => {
               <input {...inp('specialty')} />
             </div>
           </div>
-
           <div style={{ ...S.field, marginTop: 16 }}>
             <label style={S.label}>{t('aboutMe')}</label>
             <textarea
@@ -206,7 +233,6 @@ const MyProfilePage = () => {
               placeholder={t('bioPh')}
             />
           </div>
-
           {/* Skills editor */}
           <div style={{ ...S.field, marginTop: 16 }}>
             <label style={S.label}>{t('mySkills')}</label>
@@ -231,7 +257,6 @@ const MyProfilePage = () => {
               <button style={S.addSkillBtn} onClick={addSkill}>{t('addSkill')}</button>
             </div>
           </div>
-
           <div style={{ display: 'flex', justifyContent: 'flex-end', gap: 10, marginTop: 20 }}>
             <button style={S.btnCancel} onClick={cancelEdit}><XMarkIcon style={S.btnIcon} />{t('cancelEdit')}</button>
             <button style={S.btnSave} onClick={confirmEdit}><CheckIcon style={S.btnIcon} />{t('saveProfile')}</button>
@@ -259,8 +284,10 @@ const MyProfilePage = () => {
       <div style={S.card}>
         <div style={S.cardHeader}>
           <DocumentTextIcon style={{ width: 20, height: 20, color: '#fff' }} />
-          <h2 style={S.cardTitle}>{t('cvSection')}</h2>
+          <h2 style={S.cardTitle}>{t('cvSection') || 'My CV'}</h2>
         </div>
+
+        {/* AI Generate Button */}
         <button
           style={{
             display: 'inline-flex',
@@ -292,32 +319,53 @@ const MyProfilePage = () => {
           🪄 {t('generateCV') || 'Generate CV with AI'}
         </button>
 
-        {profile.cvUrl ? (
+        {profile.cvUrl || profile.cvHtml ? (
           /* CV exists */
           <div style={S.cvExist}>
             <div style={S.cvFileIcon}><DocumentTextIcon style={{ width: 28, height: 28, color: '#7c3aed' }} /></div>
             <div style={{ flex: 1, minWidth: 0 }}>
               <p style={{ fontWeight: 700, color: '#0f172a', margin: '0 0 2px', fontSize: 14, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
-                {profile.cvName || t('cvSection')}
+                {profile.cvName || 'My CV'}
               </p>
-              <p style={{ fontSize: 12, color: '#64748b', margin: 0 }}>{t('cvUploaded')}</p>
+              <p style={{ fontSize: 12, color: '#64748b', margin: 0 }}>
+                {isHtmlCV ? 'AI Generated (HTML)' : t('cvUploaded')}
+              </p>
             </div>
             <div style={{ display: 'flex', gap: 8, flexShrink: 0 }}>
-              <a href={profile.cvUrl} target="_blank" rel="noreferrer" style={S.cvBtn}>
-                <EyeIcon style={{ width: 15, height: 15 }} />{t('viewCV')}
-              </a>
+              {isHtmlCV ? (
+                <>
+                  <button style={S.cvBtn} onClick={() => setShowPreview(true)}>
+                    <EyeIcon style={{ width: 15, height: 15 }} /> {t('viewCV') || 'Preview'}
+                  </button>
+                  <button 
+                    style={{ ...S.cvBtn, background: '#dbeafe', color: '#1e40af' }} 
+                    onClick={downloadCVasPDF}
+                  >
+                    <ArrowDownTrayIcon style={{ width: 15, height: 15 }} /> PDF
+                  </button>
+                </>
+              ) : (
+                <a href={profile.cvUrl} target="_blank" rel="noreferrer" style={S.cvBtn}>
+                  <EyeIcon style={{ width: 15, height: 15 }} />{t('viewCV')}
+                </a>
+              )}
+
               <button style={{ ...S.cvBtn, background: '#fee2e2', color: '#dc2626' }} onClick={removeCV}>
                 <TrashIcon style={{ width: 15, height: 15 }} />{t('removeCV')}
               </button>
             </div>
           </div>
         ) : (
-          /* No CV — show upload UI */
+          /* No CV */
           <p style={{ fontSize: 13, color: '#64748b', marginBottom: 16 }}>{t('cvHint')}</p>
         )}
 
         {/* Upload / Link tabs */}
-        <div style={{ borderTop: profile.cvUrl ? '1px solid #f1f5f9' : 'none', paddingTop: profile.cvUrl ? 20 : 0, marginTop: profile.cvUrl ? 20 : 0 }}>
+        <div style={{ 
+          borderTop: (profile.cvUrl || profile.cvHtml) ? '1px solid #f1f5f9' : 'none', 
+          paddingTop: (profile.cvUrl || profile.cvHtml) ? 20 : 0, 
+          marginTop: (profile.cvUrl || profile.cvHtml) ? 20 : 0 
+        }}>
           <div style={{ display: 'flex', gap: 4, marginBottom: 16 }}>
             {['link', 'upload'].map(tab => (
               <button
@@ -380,12 +428,43 @@ const MyProfilePage = () => {
         </div>
       </div>
 
+      {/* CV Preview Modal */}
+      {showPreview && profile.cvHtml && (
+        <div style={{
+          position: 'fixed', top: 0, left: 0, right: 0, bottom: 0,
+          background: 'rgba(0,0,0,0.85)', display: 'flex', alignItems: 'center',
+          justifyContent: 'center', zIndex: 1000, padding: '20px'
+        }}>
+          <div style={{
+            background: '#fff', width: '100%', maxWidth: 900,
+            maxHeight: '96vh', borderRadius: 16, overflow: 'hidden',
+            boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.5)'
+          }}>
+            <div style={{ padding: '16px 24px', borderBottom: '1px solid #e2e8f0', display: 'flex', justifyContent: 'space-between', alignItems: 'center', background: '#f8fafc' }}>
+              <h3 style={{ margin: 0, fontSize: 18, fontWeight: 700 }}>CV Preview — {profile.name}</h3>
+              <div style={{ display: 'flex', gap: 12 }}>
+                <button onClick={downloadCVasPDF} style={{ ...S.btnSave, padding: '8px 20px' }}>
+                  ↓ Download as PDF
+                </button>
+                <button onClick={() => setShowPreview(false)} style={S.btnCancel}>
+                  Close
+                </button>
+              </div>
+            </div>
+
+            <div style={{ height: 'calc(96vh - 70px)', overflow: 'auto', padding: 30, background: '#fafafa' }}>
+              <div dangerouslySetInnerHTML={{ __html: profile.cvHtml }} />
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };
 
 /* ── Styles ─────────────────────────────────────────────────────── */
 const S = {
+  // ... Keep ALL your original styles exactly as they were ...
   headerCard: {
     background: 'linear-gradient(135deg, #f5f0ff 0%, #ede9fe 100%)',
     border: '1px solid #ddd6fe',
@@ -418,7 +497,6 @@ const S = {
   metaRow: { display: 'flex', flexWrap: 'wrap', gap: '6px 18px', marginTop: 2 },
   metaItem: { display: 'flex', alignItems: 'center', gap: 5, fontSize: 12, color: '#475569', fontWeight: 500 },
   metaIcon: { width: 14, height: 14, color: '#7c3aed' },
-
   statsGrid: { display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 14, marginBottom: 20 },
   statBox: {
     background: '#fff', borderRadius: 18, border: '1px solid #e2e8f0',
@@ -427,7 +505,6 @@ const S = {
   },
   statVal: { fontSize: 22, fontWeight: 900, color: '#7c3aed' },
   statLbl: { fontSize: 12, color: '#64748b', fontWeight: 600 },
-
   card: {
     background: '#fff', borderRadius: 20, border: '1px solid #e2e8f0',
     padding: '28px 32px', marginBottom: 20,
@@ -440,7 +517,6 @@ const S = {
   cardTitle: { fontSize: 16, fontWeight: 800, color: '#0f172a', margin: 0 },
   sectionTitle: { fontSize: 16, fontWeight: 800, color: '#0f172a', margin: '0 0 12px' },
   aboutText: { fontSize: 14, color: '#374151', lineHeight: 1.75, margin: 0 },
-
   skillBadge: {
     background: '#f5f3ff', color: '#7c3aed', borderRadius: 100,
     padding: '5px 14px', fontSize: 13, fontWeight: 700,
@@ -457,7 +533,6 @@ const S = {
     background: '#7c3aed', color: '#fff', fontWeight: 700, fontSize: 13,
     cursor: 'pointer', fontFamily: 'inherit',
   },
-
   formGrid: { display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px 20px' },
   field: { display: 'flex', flexDirection: 'column', gap: 5 },
   label: { fontSize: 13, fontWeight: 700, color: '#374151' },
@@ -467,7 +542,6 @@ const S = {
     background: '#f8fafc', fontFamily: 'inherit', boxSizing: 'border-box',
     width: '100%',
   },
-
   btnEdit: {
     display: 'inline-flex', alignItems: 'center', gap: 6,
     padding: '9px 18px', borderRadius: 12, border: '1.5px solid #7c3aed',
@@ -487,7 +561,6 @@ const S = {
     fontWeight: 700, fontSize: 13, cursor: 'pointer', fontFamily: 'inherit',
   },
   btnIcon: { width: 15, height: 15 },
-
   cvExist: {
     display: 'flex', alignItems: 'center', gap: 14,
     background: '#f5f3ff', borderRadius: 14, padding: '14px 18px',
@@ -516,7 +589,6 @@ const S = {
     display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 8,
     cursor: 'pointer', fontFamily: 'inherit', boxSizing: 'border-box',
   },
-
   reviewCard: {
     background: '#f8fafc', borderRadius: 14, border: '1px solid #e2e8f0', padding: 18,
   },
